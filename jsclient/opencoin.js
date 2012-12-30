@@ -77,9 +77,20 @@ ContainerField.prototype.toData = function(data,master) {
     return data.toData(null,master);     
 }
 
+function Base64Field() {}
+Base64Field.prototype.fromData = function (data,master) {
+    return atob(data);
+}
+Base64Field.prototype.toData = function (data,master) {
+    return btoa(data);
+}
+
+
 
 ////////////////// Containerbase //////////////////
-function Container () {}
+function Container () {
+    this.type = 'Container';
+}
 Container.prototype.fields = {}
 Container.prototype.getType = function() {
     return this.constructor.name.toLowerCase();
@@ -97,18 +108,60 @@ Container.prototype.toData = function(ignored,master) {
     for (name in this.fields) {
         out[name] = this.fields[name].toData(this[name],master);    
     } 
-    out['type'] = this.getType();
+    out['type'] = this.type;
     return out;
 }
 
+function bencode(data) {
+    var type = typeof(data);
+    if (type=='string') {
+        return data.length+':'+data;
+    } else if (type=='number') {
+        return 'i'+data+'e';    
+    } else if (Array.isArray(data)) {
+        var out = 'l';
+        for (i in data) {
+            out += bencode(data[i])    
+        }
+        out += 'e';
+        return out;
+    } else { //must be an object then    
+        var out = 'd';
+        var keys = Object.keys(data);
+        keys.sort()
+        for (i in keys) {
+            var key = keys[i];
+            out += bencode(key);
+            out += bencode(data[key]);
+        }
+        out += 'e';
+        return out;
+    }
+}
+Container.prototype.bencode = function () {
+    return bencode(this.toData(null,this));    
+}
+
+Container.prototype.toJson = function () {
+    return JSON.stringify(this.toData(),null,2);    
+}
+
+Container.prototype.fromJson = function (jsonstring) {
+    return this.fromData(JSON.parse(jsonstring));    
+}
+
 ////////////////// Containers //////////////////
-function RSAPublicKey(){}
+function RSAPublicKey(){
+    this.type = 'RSA Public Key';    
+}
 RSAPublicKey.prototype = new Container();
 RSAPublicKey.prototype.constructor = RSAPublicKey;
-RSAPublicKey.prototype.fields = {'n': new Field(),
-                                      'e': new Field()}
+RSAPublicKey.prototype.fields = {'n': new Base64Field(),
+                                 'e': new Base64Field()}
 
-function CDD () {}
+function CDD () {
+    this.type='cdd';
+}
 CDD.prototype = new Container();
 CDD.prototype.constructor = CDD;
 CDD.prototype.fields = {'protocol_version':         new Field(),
@@ -132,13 +185,16 @@ CDD.prototype.fields = {'protocol_version':         new Field(),
                         'additional_info':          new Field()
                        }
 
-function SignedData () {}
+function SignedData () {
+    this.type='signed data';    
+}
 SignedData.prototype = new Container();
 SignedData.prototype.constructor = SignedData;
 SignedData.prototype.fields = {'data':      new ContainerField(),
                                'signature': new Field()};
 function CDDCertificate () {
-    this.fields['data'] = new ContainerField(CDD);    
+    this.type='cdd certificate';   
+    this.fields['data'] = new ContainerField(CDD);
 }
 CDDCertificate.prototype = new SignedData();
 CDDCertificate.prototype.constructor = CDDCertificate;
@@ -148,11 +204,10 @@ data = {
   "protocol_version": "1.0",
   "cdd_location": "http://opencent.org",
   "issuer_public_master_key": {
-    "n": "23",
-    "e": "5",
-    "type": "cdd"
+    "n": "MjM=", //23
+    "e": "NQ==", //5
   },
-  "issuer_cipher_suite": "RSA2048-SHA512",
+  "issuer_cipher_suite": "RSA2048-SHA512-CHAUM86",
   "cdd_serial": 1,
   "cdd_signing_date": "2012-12-30T11:46:00",
   "cdd_expiry_date": "2014-12-31T23:59:59",
@@ -173,15 +228,44 @@ data = {
 }
 
 cdd = new CDD();
-cdd.fromData(data);
+cdd.protocol_version = '1.0';
+cdd.cdd_location = 'http://opencent.org';
+cdd.issuer_public_master_key = new RSAPublicKey();
+cdd.issuer_public_master_key.n = 23;
+cdd.issuer_public_master_key.e = 5;
+cdd.issuer_cipher_suite = 'RSA2048-SHA512-CHAUM86';
+cdd.cdd_serial = 1;
+cdd.cdd_signing_date = new Date("2012-12-30T11:46:00");
+cdd.cdd_expiry_date = new Date("2014-12-31T23:59:59");
+cdd.currency_name = 'OpenCent';
+cdd.currency_divisor = 100;
+cdd.validation_service = [[10,'http://opencent.org'],
+                          [20,'http://opencent.com/validate']];
+cdd.info_service =  [[10,'http://opencent.org']];
+cdd.renewal_service =  [[10,'http://opencent.org']];
+cdd.invalidation_service =  [[10,'http://opencent.org']];
+cdd.denominations=[1,2,3];
+cdd.additional_info='';
+json1 = cdd.toJson();
+bc1 = cdd.bencode();
 
-signedcdd = new CDDCertificate();
-signedcdd.data = cdd
-signedcdd.signature = 'mysignature';
-signeddata = signedcdd.toData();
 
-cddd2 = new CDDCertificate();
-cddd2.fromData(signeddata);
+cdd2 = new CDD();
+cdd2.fromData(data);
+json2 = cdd2.toJson();
+bc2 = cdd.bencode();
 
+console.log(bc1 == bc2);
+console.log(json1 == json2);
 
+cddc1 = new CDDCertificate();
+cddc1.data = cdd2
+cddc1.signature = 'mysignature';
+cddc1data = cddc1.toData();
 
+cddc2 = new CDDCertificate();
+cddc2.fromData(cddc1data);
+json3 = cddc2.data.toJson();
+bc3 = cddc2.data.bencode();
+console.log(json1 == json2 && json2 == json3);
+console.log(bc1 == bc2 && bc2 == bc3);
