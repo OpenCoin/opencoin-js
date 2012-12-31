@@ -8,6 +8,7 @@ Field.prototype.toData = function (data,master) {
     return data;
 }
 
+//-----------------------------------
 
 function PublicKeyField(){}
 PublicKeyField.prototype.fromData = function(data,master) {
@@ -22,6 +23,8 @@ PublicKeyField.prototype.toData = function(data,master) {
     return data.toData(null,master);
 }
 
+//-----------------------------------
+
 function DateField(){}
 DateField.prototype.fromData = function(data,master) {
     return new Date(data);    
@@ -29,6 +32,8 @@ DateField.prototype.fromData = function(data,master) {
 DateField.prototype.toData = function(data,master) {
     return data.toISOString();    
 }
+
+//-----------------------------------
 
 function ListField(fields){
     this.fields = fields;
@@ -50,6 +55,7 @@ ListField.prototype.toData = function(data,master) {
     return data;    
 }
 
+//-----------------------------------
 
 function ValuesField(field){
     this.field = field
@@ -62,8 +68,14 @@ ValuesField.prototype.fromData = function(data,master) {
     return out;
 }
 ValuesField.prototype.toData = function(data,master) {
-    return data;    
+    var out = [];
+    for (i in data) {
+        out[i] = this.field.fromData(data[i],master);
+    }
+    return out;    
 }
+
+//-----------------------------------
 
 function ContainerField(klass){
     this.klass = klass;    
@@ -76,6 +88,9 @@ ContainerField.prototype.fromData = function(data,master) {
 ContainerField.prototype.toData = function(data,master) {
     return data.toData(null,master);     
 }
+
+
+//-----------------------------------
 
 function Base64Field() {}
 Base64Field.prototype.fromData = function (data,master) {
@@ -143,7 +158,7 @@ Container.prototype.bencode = function () {
 }
 
 Container.prototype.toJson = function () {
-    return JSON.stringify(this.toData(),null,2);    
+    return JSON.stringify(this.toData(),null,4);    
 }
 
 Container.prototype.fromJson = function (jsonstring) {
@@ -151,13 +166,16 @@ Container.prototype.fromJson = function (jsonstring) {
 }
 
 ////////////////// Containers //////////////////
+
 function RSAPublicKey(){
     this.type = 'RSA Public Key';    
 }
 RSAPublicKey.prototype = new Container();
 RSAPublicKey.prototype.constructor = RSAPublicKey;
-RSAPublicKey.prototype.fields = {'n': new Base64Field(),
-                                 'e': new Base64Field()}
+RSAPublicKey.prototype.fields = {'modulus': new Base64Field(),
+                                 'public_exponent': new Base64Field()}
+
+//-----------------------------------
 
 function CDD () {
     this.type='cdd';
@@ -185,54 +203,102 @@ CDD.prototype.fields = {'protocol_version':         new Field(),
                         'additional_info':          new Field()
                        }
 
-function SignedData () {
-    this.type='signed data';    
-}
-SignedData.prototype = new Container();
-SignedData.prototype.constructor = SignedData;
-SignedData.prototype.fields = {'data':      new ContainerField(),
-                               'signature': new Field()};
+//-----------------------------------
+
 function CDDCertificate () {
     this.type='cdd certificate';   
-    this.fields['data'] = new ContainerField(CDD);
 }
-CDDCertificate.prototype = new SignedData();
+CDDCertificate.prototype = new Container();
 CDDCertificate.prototype.constructor = CDDCertificate;
+CDDCertificate.prototype.fields = {'cdd':      new ContainerField(CDD),
+                                   'signature': new Field()};
+
+//-----------------------------------
+
+function MintKey () {
+    this.type = 'mint key';
+}
+MintKey.prototype = new Container();
+MintKey.prototype.constructor = MintKey;
+MintKey.prototype.fields = {'id':                       new Field(),
+                            'issuer_id':                new Field(),
+                            'cdd_serial':               new Field(),
+                            'public_mint_key':          new PublicKeyField(),
+                            'denomination':             new Field(),
+                            'sign_coins_not_before':    new DateField(),
+                            'sign_coins_not_after':     new DateField(),
+                            'coins_expiry_date':        new DateField()
+                           }
+
+//-----------------------------------
+
+function MintKeyCertificate () {
+    this.type='mint key certificate';   
+}
+MintKeyCertificate.prototype = new Container();
+MintKeyCertificate.prototype.constructor = MintKeyCertificate;
+MintKeyCertificate.prototype.fields = {'mint_key':  new ContainerField(MintKey),
+                                       'signature': new Field()};
+
+//-----------------------------------
+
+function Blank () {
+    this.type = 'token' //XXX Really?
+}
+Blank.prototype = new Container();
+Blank.prototype.constructor = Blank;
+Blank.prototype.fields = {'protocol_version':   new Field(),
+                          'issuer_id':          new Field(),
+                          'cdd_location':       new Field(),
+                          'denomination':       new Field(),
+                          'mint_key_id':        new Field(),
+                          'serial':             new Field()
+                         }
+
+//-----------------------------------
+
+function Blind () {
+    this.type = 'blinded token hash';
+}
+Blind.prototype = new Container();
+Blind.prototype.constructor = Blind;
+Blind.prototype.fields = {'reference':          new Field(),
+                          'blinded_token_hash': new Field(),
+                          'mint_key_id':        new Field()
+                         }
+
+//-----------------------------------
+
+function BlindSignature () {
+    this.type = 'blind signature';
+}
+BlindSignature.prototype = new Container();
+BlindSignature.prototype.constructor = BlindSignature;
+BlindSignature.prototype.fields = {'reference':          new Field(),
+                                   'blind_signature': new Field()
+                                  }
+
+//-----------------------------------
+
+function Coin () {
+    this.type = 'coin'    
+}                     
+Coin.prototype = new Container();
+Coin.prototype.constructor = Coin;
+Coin.prototype.fields = {'token':        new ContainerField(Blank),
+                         'signature':    new Field()
+                        }
+
+
+
 
 //////////////////////// Playground ///////////////////////////
-data = {
-  "protocol_version": "1.0",
-  "cdd_location": "http://opencent.org",
-  "issuer_public_master_key": {
-    "n": "MjM=", //23
-    "e": "NQ==", //5
-  },
-  "issuer_cipher_suite": "RSA2048-SHA512-CHAUM86",
-  "cdd_serial": 1,
-  "cdd_signing_date": "2012-12-30T11:46:00",
-  "cdd_expiry_date": "2014-12-31T23:59:59",
-  "currency_name": "OpenCent",
-  "currency_divisor": 100,
-  "info_service": [[10,'http://opencent.org']],
-  "validation_service": [[10,'http://opencent.org'],
-                         [20,'http://opencent.com/validate']],
-  "renewal_service": [[10,'http://opencent.org']],
-  "invalidation_service": [[10,'http://opencent.org']],
-  "denominations": [
-    1,
-    2,
-    3
-  ],
-  "additional_info": "",
-  "type": "cdd"
-}
-
 cdd = new CDD();
-cdd.protocol_version = '1.0';
+cdd.protocol_version = 'http://opencoin.org/1.0';
 cdd.cdd_location = 'http://opencent.org';
-cdd.issuer_public_master_key = new RSAPublicKey();
-cdd.issuer_public_master_key.n = 23;
-cdd.issuer_public_master_key.e = 5;
+cdd.issuer_public_master_key =  new RSAPublicKey();
+cdd.issuer_public_master_key.modulus = 23;
+cdd.issuer_public_master_key.public_exponent = 5;
 cdd.issuer_cipher_suite = 'RSA2048-SHA512-CHAUM86';
 cdd.cdd_serial = 1;
 cdd.cdd_signing_date = new Date("2012-12-30T11:46:00");
@@ -250,22 +316,58 @@ json1 = cdd.toJson();
 bc1 = cdd.bencode();
 
 
-cdd2 = new CDD();
-cdd2.fromData(data);
-json2 = cdd2.toJson();
-bc2 = cdd.bencode();
+cddc = new CDDCertificate();
+cddc.cdd = cdd
+cddc.signature = 'mysignature';
 
-console.log(bc1 == bc2);
-console.log(json1 == json2);
+//console.log(cdd.toJson());
+//console.log(cdd.bencode());
+//console.log(cddc.toJson());
 
-cddc1 = new CDDCertificate();
-cddc1.data = cdd2
-cddc1.signature = 'mysignature';
-cddc1data = cddc1.toData();
+mk = new MintKey();
+mk.id = '1234';
+mk.issuer_id = 'abcd';
+mk.cdd_serial = 1;
+mk.public_mint_key = new RSAPublicKey();
+mk.public_mint_key.public_exponent = 5;
+mk.public_mint_key.modulus = 23;
+mk.denomination = 1;
+mk.sign_coins_not_before =  new Date("2012-12-30T11:46:00");
+mk.sign_coins_not_after =  new Date("2013-12-30T11:46:00");
+mk.coins_expiry_date =  new Date("2014-12-30T11:46:00");
+//console.log(mk.toJson());
 
-cddc2 = new CDDCertificate();
-cddc2.fromData(cddc1data);
-json3 = cddc2.data.toJson();
-bc3 = cddc2.data.bencode();
-console.log(json1 == json2 && json2 == json3);
-console.log(bc1 == bc2 && bc2 == bc3);
+mkc = new MintKeyCertificate();
+mkc.mint_key = mk;
+mkc.signature = 'my signature';
+
+//console.log(mkc.toJson());
+
+blank = new Blank();
+blank.protocol_version = 'http://opencoin.org/1.0';
+blank.issuer_id = 'abcd';
+blank.cdd_location = 'http://opencent.org';
+blank.denomination = 1;
+blank.mint_key_id = '1234';
+blank.serial = '789abc';
+
+//console.log(blank.toJson());
+
+blind = new Blind();
+blind.reference = 'b1';
+blind.blinded_token_hash = 'aaabbbccc';
+blind.mint_key_id = '1234';
+
+//console.log(blind.toJson());
+
+bsignature = new BlindSignature();
+bsignature.reference = 'b1';
+bsignature.blind_signature = 'xxx123';
+
+//console.log(bsignature.toJson());
+
+coin = new Coin();
+coin.token = blank;
+coin.signature = 'yyy345';
+
+console.log(coin.toJson());
