@@ -4,6 +4,12 @@ oc.addContainer('RSAPublicKey','rsa public key').prototype.fields = {
     'modulus':         new oc.f.Base64Field(),
     'public_exponent': new oc.f.Base64Field()};
 
+oc.addContainer('RSAPrivateKey','rsa private key').prototype.fields = {
+    'modulus':          new oc.f.Base64Field(),
+    'public_exponent':  new oc.f.Base64Field(),
+    'private_exponent': new oc.f.Base64Field()};
+
+
 
 oc.addContainer('CDD','cdd').prototype.fields = {
     'protocol_version':         new oc.f.Field(),

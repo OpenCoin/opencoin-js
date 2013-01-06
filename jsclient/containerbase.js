@@ -97,7 +97,7 @@ oc.f.ValuesField.prototype.fromData = function(data,master) {
 oc.f.ValuesField.prototype.toData = function(data,master) {
     var out = [];
     for (i in data) {
-        out[i] = this.field.fromData(data[i],master);
+        out[i] = this.field.toData(data[i],master);
     }
     return out;    
 }
@@ -144,13 +144,18 @@ oc.f.ContainersField.prototype.toData = function(data,master) {
 
 oc.f.Base64Field = function Base64Field() {}
 oc.f.Base64Field.prototype.fromData = function (data,master) {
-    return atob(data);
+    return oc.crypto.rsa_sha256_chaum86.s2b(data);
+    //return atob(data);
 }
 oc.f.Base64Field.prototype.toData = function (data,master) {
-    return btoa(data);
+    return oc.crypto.rsa_sha256_chaum86.b2s(data);
+    //return btoa(data);
 }
 
-
+oc.f.BigIntField = function BigIntField() {}
+oc.f.BigIntField.prototype.fromData = function (data,master) {
+    
+}
 
 ////////////////// Containerbase //////////////////
 oc.c.Container = function Container () {

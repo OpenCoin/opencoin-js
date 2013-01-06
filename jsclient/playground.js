@@ -20,10 +20,9 @@ function pcontainer(name,container,dobencode) {
 cdd = new oc.c.CDD();
 cdd.protocol_version = 'http://opencoin.org/1.0';
 cdd.cdd_location = 'http://opencent.org';
+cdd.issuer_cipher_suite = 'RSA-SHA512-CHAUM86';
 cdd.issuer_public_master_key =  new oc.c.RSAPublicKey();
-cdd.issuer_public_master_key.modulus = 23;
-cdd.issuer_public_master_key.public_exponent = 5;
-cdd.issuer_cipher_suite = 'RSA2048-SHA512-CHAUM86';
+cdd.issuer_public_master_key.fromData({'modulus':'23','public_exponent':'5'});
 cdd.cdd_serial = 1;
 cdd.cdd_signing_date = new Date("2012-12-30T11:46:00");
 cdd.cdd_expiry_date = new Date("2014-12-31T23:59:59");
@@ -52,8 +51,7 @@ mk.id = '1234';
 mk.issuer_id = 'abcd';
 mk.cdd_serial = 1;
 mk.public_mint_key = new oc.c.RSAPublicKey();
-mk.public_mint_key.public_exponent = 5;
-mk.public_mint_key.modulus = 23;
+mk.public_mint_key.fromData({'modulus':'23','public_exponent':'5'});
 mk.denomination = 1;
 mk.sign_coins_not_before =  new Date("2012-12-30T11:46:00");
 mk.sign_coins_not_after =  new Date("2013-12-30T11:46:00");
@@ -203,3 +201,32 @@ rsrc.messge_reference = 8;
 rsrc.status_code = 200;
 rsrc.status_description = 'ok';
 pcontainer('Message: received coins',rsrc);
+
+/////////////////// cryptofun ///////////////////////////
+suite = oc.crypto.rsa_sha256_chaum86;
+
+keydata = {'modulus':'50627820219869774840534863587014811269175028232047628519071590862595588659880326373570321832391367905095022692904368723070494008484969214316957188279155652278651718833989334392440029145157766561275408580411085909849634394981874535917349655299726547254564053932537532246064690142381334535190022716641846367601', 
+          'public_exponent':'65537',
+          'private_exponent':'2342242563844014180028101780609867826848019982598660446310100607220193551989824825131837218606445633584816345039993377303656527362046273979721595356247614189731625650586359912191221460315110551825131536281801580160766703515370733464284839788088479004626861588270785599409899702397806382050775837170006750817'};
+priv = new oc.c.RSAPrivateKey();
+priv.fromData(keydata);
+pub = new oc.c.RSAPublicKey();
+pub.fromData(keydata);
+
+message='42920943066373364574206770648812969462035444625389613786322916515264688143150';
+message = str2bigInt(message,10,0);
+signature = suite.sign(priv,message);
+console.log(suite.b2s(signature,64));
+console.log(suite.verify(pub,message,signature));
+
+message2 = 'schnuckis';
+signature2 = suite.signtext(priv,message2);
+console.log(suite.verifytext(pub,message2,signature2));
+
+b = suite.blind(pub,message);
+blindsignature = suite.sign(priv,b.bm);
+signature3 = suite.unblind(pub,blindsignature,b.r);
+console.log(suite.verify(pub,message,signature3));
+
+
+
