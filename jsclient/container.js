@@ -8,8 +8,13 @@ oc.addContainer('RSAPrivateKey','rsa private key').prototype.fields = {
     'modulus':          new oc.f.Base64Field(),
     'public_exponent':  new oc.f.Base64Field(),
     'private_exponent': new oc.f.Base64Field()};
-
-
+oc.c.RSAPrivateKey.prototype.getPublicKey = function () {
+    var pub = new oc.c.RSAPublicKey();
+    pub.modulus = this.modulus;
+    pub.public_exponent = this.public_exponent;
+    return pub;
+}
+    
 
 oc.addContainer('CDD','cdd').prototype.fields = {
     'protocol_version':         new oc.f.Field(),
@@ -35,7 +40,7 @@ oc.addContainer('CDD','cdd').prototype.fields = {
 
 oc.addContainer('CDDCertificate','cdd certificate').prototype.fields = {
     'cdd':       new oc.f.ContainerField(oc.c.CDD),
-    'signature': new oc.f.Field()};
+    'signature': new oc.f.Base64Field()};
 
 
 oc.addContainer('MintKey','mint key').prototype.fields = {
@@ -51,7 +56,7 @@ oc.addContainer('MintKey','mint key').prototype.fields = {
 
 oc.addContainer('MintKeyCertificate','mint key certificate').prototype.fields = {
     'mint_key':  new oc.f.ContainerField(oc.c.MintKey),
-    'signature': new oc.f.Field()};
+    'signature': new oc.f.Base64Field()};
 
 
 oc.addContainer('Blank','token').prototype.fields = {
@@ -60,23 +65,23 @@ oc.addContainer('Blank','token').prototype.fields = {
     'cdd_location':       new oc.f.Field(),
     'denomination':       new oc.f.Field(),
     'mint_key_id':        new oc.f.Field(),
-    'serial':             new oc.f.Field()};
+    'serial':             new oc.f.Base64Field()};
 
 
 oc.addContainer('Blind','blinded token hash').prototype.fields = {
     'reference':          new oc.f.Field(),
-    'blinded_token_hash': new oc.f.Field(),
+    'blinded_token_hash': new oc.f.Base64Field(),
     'mint_key_id':        new oc.f.Field()};
 
 
 oc.addContainer('BlindSignature','blind signature').prototype.fields = {
     'reference':       new oc.f.Field(),
-    'blind_signature': new oc.f.Field()};
+    'blind_signature': new oc.f.Base64Field()};
 
 
 oc.addContainer('Coin','coin').prototype.fields = {
     'token':        new oc.f.ContainerField(oc.c.Blank),
-    'signature':    new oc.f.Field()};
+    'signature':    new oc.f.Base64Field()};
 
 
 

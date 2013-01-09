@@ -40,7 +40,7 @@ oc.addContainer('RequestValidation','request validation').prototype.fields = {
     'message_reference' :       new oc.f.Field(),
     'transaction_reference':    new oc.f.Field(),
     'authorization_info':       new oc.f.Field(),
-    'tokens':                   new oc.f.ContainersField(oc.c.Blank)};
+    'tokens':                   new oc.f.ContainersField(oc.c.Blind)};
 
 
 oc.addContainer('ResponseValidation','response validation').prototype.fields = {

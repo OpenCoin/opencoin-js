@@ -4,13 +4,34 @@
 <body>
 <h1>opencoin example json entities</h1>
 <span id='content'></span>
+<script>
+function output(html) {
+    var content = document.getElementById('content');
+    content.insertAdjacentHTML('beforeend',html);
+}
+
+function pcontainer(name,container,dobencode) {
+    output('<h2>'+name+'</h3>');
+    output('<h3>json</h3>');
+    output('<pre>'+container.toJson()+'</pre>');
+    if (dobencode!=undefined) {
+        output('<h3>bencoded (for signature)<h3>');
+        output(container.bencode());
+    }
+    output('<hr>');   
+}
+output(new Date());
+</script>
+
     <script  src='containerbase.js' ></script>
     <script  src='container.js' ></script>
     <script  src='messages.js' ></script>
     <script  src='BigInt.js' ></script>
     <script  src='sha256.js' ></script>
     <script  src='occrypto.js' ></script>
-    <script  src='playground.js' ></script>
+    <script  src='ocapi.js' ></script>
+    <!--<script  src='playground.js' ></script>-->
+    <script  src='api_usage.js' ></script>
 
 
 </body>

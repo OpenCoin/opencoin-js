@@ -1,20 +1,6 @@
 //////////////////////// Playground ///////////////////////////
 
-function output(html) {
-    var content = document.getElementById('content');
-    content.insertAdjacentHTML('beforeend',html);
-}
 
-function pcontainer(name,container,dobencode) {
-    output('<h2>'+name+'</h3>');
-    output('<h3>json</h3>');
-    output('<pre>'+container.toJson()+'</pre>');
-    if (dobencode!=undefined) {
-        output('<h3>bencoded (for signature)<h3>');
-        output(container.bencode());
-    }
-    output('<hr>');   
-}
 
 
 cdd = new oc.c.CDD();
@@ -134,7 +120,7 @@ rqv = new oc.c.RequestValidation();
 rqv.message_reference = 4;
 rqv.transaction_reference = 111222333;
 rqv.authorization_info = 'mysecret';
-rqv.tokens = [blank];
+rqv.tokens = [blind];
 pcontainer('Message: Request validation',rqv);
 
 rsv = new oc.c.ResponseValidation();
@@ -213,20 +199,17 @@ priv.fromData(keydata);
 pub = new oc.c.RSAPublicKey();
 pub.fromData(keydata);
 
-message='42920943066373364574206770648812969462035444625389613786322916515264688143150';
-message = str2bigInt(message,10,0);
+messagestring='42920943066373364574206770648812969462035444625389613786322916515264688143150';
+message = str2bigInt(messagestring,10,0);
 signature = suite.sign(priv,message);
-console.log(suite.b2s(signature,64));
-console.log(suite.verify(pub,message,signature));
+//console.log(suite.b2s(signature,64));
+outcome = suite.verify(pub,message,signature);
 
 message2 = 'schnuckis';
 signature2 = suite.signtext(priv,message2);
-console.log(suite.verifytext(pub,message2,signature2));
+outcome = suite.verifytext(pub,message2,signature2);
 
 b = suite.blind(pub,message);
-blindsignature = suite.sign(priv,b.bm);
+blindsignature = suite.sign(priv,b.blinded_token_hash);
 signature3 = suite.unblind(pub,blindsignature,b.r);
-console.log(suite.verify(pub,message,signature3));
-
-
-
+outcome = suite.verify(pub,message,signature3);

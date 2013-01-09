@@ -77,14 +77,16 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         keylength = this.guessKeyLength(pubkey);
         r  = this.getRandomNumber(keylength);
         blinder = powMod(r,pubkey.public_exponent,pubkey.modulus);
-        bm = multMod(blinder,num,pubkey.modulus);
-        return {'r':r,'bm':bm};
+        bth = multMod(blinder,num,pubkey.modulus);
+        return {'r':r,'blinded_token_hash':bth};
     }
 
     this.unblind = function(pubkey,bs,r) {
         var unblinder = inverseMod(r,pubkey.modulus);
         return multMod(unblinder,bs,pubkey.modulus);
     }
+
+    this.makeKeys = function (length) {}
 
 }();
 
