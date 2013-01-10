@@ -8,7 +8,6 @@ issuer_public = issuer_private.getPublicKey();
 
 suite = oc.crypto.rsa_sha256_chaum86;
 api = new oc.api(suite);
-console.log(api);
 
 params = {};
 params.cdd_location = 'http://opencent.org';
@@ -63,10 +62,13 @@ rscdd.status_code = 200;
 rscdd.status_description = 'ok';
 rscdd.cdd = cddc;
 pcontainer('Message: Response CDD',rscdd);
+output('Verified cdd signature: ' + suite.verifyContainerSignature(cddc.cdd.issuer_public_master_key,cddc.cdd,cddc.signature));
+output('<hr>');
+
 
 rqmk = new oc.c.RequestMintKeys();
 rqmk.message_reference = 3;
-rqmk.mint_key_ids = ["0e7e7fef1972c42e658e16fd3f9c2fed9b994278d3552007a42a74e85bbd8c73"];
+rqmk.mint_key_ids = ["8cadb7e3e0b1ca97283304f2b497ff40bd5a6163de8427bffa817f40c8df5085"];
 pcontainer('Message: Request MintKeys (by id)',rqmk);
 
 rqmk2 = new oc.c.RequestMintKeys();
@@ -80,8 +82,8 @@ rsmk.status_code = 200;
 rsmk.status_description = 'ok';
 rsmk.keys = [mkc];
 pcontainer('Message: Response MintKeys',rsmk);
-
-
+output('Verified mint key signature: ' + suite.verifyContainerSignature(cddc.cdd.issuer_public_master_key,mkc.mint_key,mkc.signature));
+output('<hr>');
 var blindout = api.makeBlind(cddc,mkc,'reference_1234');
 
 var r = blindout.r;
@@ -116,6 +118,8 @@ pcontainer('Message: Response validation - signatures',rsv2);
 
 var coin = api.makeCoin(blank,blindsignature,r,mkc);
 
+output('Verify coin signature: ' + suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin.token,coin.signature));
+output('<hr>');
 
 var blindout2 = api.makeBlind(cddc,mkc,'reference_5678');
 var r2 = blindout2.r;
@@ -147,6 +151,9 @@ rsrn2.blind_signatures = [blindsignature2];
 pcontainer('Message: Response renewal - signatures',rsrn2);
 
 var coin2 = api.makeCoin(blank2,blindsignature2,r2,mkc);
+output('Verify coin2 signature: ' + suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin2.token,coin2.signature));
+output('<hr>');
+
 
 rqsc = new oc.c.SendCoins();
 rqsc.message_reference = 8;

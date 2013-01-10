@@ -24,8 +24,7 @@ oc.api = function opencoin_api (suite) {
         
         var cddc = new oc.c.CDDCertificate();
         cddc.cdd = cdd;
-        console.log(cdd);
-        cddc.signature = this.suite.sign(privkey,cdd.toJson());
+        cddc.signature = this.suite.signContainer(privkey,cdd);
         return cddc;
     }
 
@@ -35,8 +34,8 @@ oc.api = function opencoin_api (suite) {
         var mint_privkey = new oc.c.RSAPrivateKey();
         mint_privkey.fromData(this.dummy_keydata);
         mk.public_mint_key = mint_privkey.getPublicKey();
-        mk.id = this.suite.hash(mk.public_mint_key.toJson());
-        mk.issuer_id = this.suite.hash(issuer_privkey.getPublicKey().toJson());
+        mk.id = this.suite.hash(mk.public_mint_key.toBencode());
+        mk.issuer_id = this.suite.hash(issuer_privkey.getPublicKey().toBencode());
         mk.cdd_serial = cddc.cdd.cdd_serial;
         mk.denomination = params.denomination;
         mk.sign_coins_not_before = params.notBefore;
@@ -44,7 +43,7 @@ oc.api = function opencoin_api (suite) {
         mk.coins_expiry_date = params.coins_expiry_date;
         var mkc = new oc.c.MintKeyCertificate();
         mkc.mint_key = mk;
-        mkc.signature = this.suite.sign(issuer_privkey,mk.toJson());
+        mkc.signature = this.suite.signContainer(issuer_privkey,mk);
         out = {}
         out.mkc = mkc;
         out.private_mintkey = mint_privkey;
@@ -56,20 +55,18 @@ oc.api = function opencoin_api (suite) {
         var out, serial, mk, pub, keylength, tmp, token,hash,hashnumber, blind;
         mk = mkc.mint_key;
         pub = mk.public_mint_key;
-        console.log(mkc);
         //keylength = suite.guessKeyLength(pub);
 
         token = new oc.c.Blank();
         token.protocol_version = cddc.cdd.protocol_version;
-        token.issuer_id = this.suite.hash(cddc.cdd.issuer_public_master_key.toJson());
+        token.issuer_id = this.suite.hash(cddc.cdd.issuer_public_master_key.toBencode());
         token.cdd_location = cddc.cdd.cdd_location;
         token.denomination = mk.denomination;
         token.mint_key_id = mk.id;
         token.serial = this.suite.getRandomNumber(128);
         
-        hash = this.suite.hash(token.toJson());
-        hashnumber = this.suite.s2b(hash,16);
-        tmp = this.suite.blind(pub,hashnumber);
+        hash = this.suite.hashContainer(token);
+        tmp = this.suite.blind(pub,hash);
         
         blind = new oc.c.Blind();
         blind.reference = reference;
@@ -97,11 +94,7 @@ oc.api = function opencoin_api (suite) {
         var pub = mkc.mint_key.public_mint_key;
         var signature = this.suite.unblind(pub,blindsignature.blind_signature,r);
 
-        var hash = this.suite.hash(blank.toJson());
-        var hashnumber = this.suite.s2b(hash,16);
-
-        if (!this.suite.verify(pub,hashnumber,signature)) throw 'verification failed';    
-        
+        if (!this.suite.verifyContainerSignature(pub,blank,signature)) throw 'verification failed';    
         var coin = new oc.c.Coin();
         coin.token = blank;
         coin.signature = signature;

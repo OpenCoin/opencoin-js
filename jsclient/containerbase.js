@@ -182,7 +182,7 @@ oc.c.Container.prototype.toData = function(ignored,master) {
     return out;
 }
 
-function bencode(data) {
+function toBencode(data) {
     var type = typeof(data);
     if (type=='string') {
         return data.length+':'+data;
@@ -191,7 +191,7 @@ function bencode(data) {
     } else if (Array.isArray(data)) {
         var out = 'l';
         for (i in data) {
-            out += bencode(data[i])    
+            out += toBencode(data[i])    
         }
         out += 'e';
         return out;
@@ -201,15 +201,15 @@ function bencode(data) {
         keys.sort()
         for (i in keys) {
             var key = keys[i];
-            out += bencode(key);
-            out += bencode(data[key]);
+            out += toBencode(key);
+            out += toBencode(data[key]);
         }
         out += 'e';
         return out;
     }
 }
-oc.c.Container.prototype.bencode = function () {
-    return bencode(this.toData(null,this));    
+oc.c.Container.prototype.toBencode = function () {
+    return toBencode(this.toData(null,this));    
 }
 
 oc.c.Container.prototype.toJson = function () {

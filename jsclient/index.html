@@ -16,7 +16,7 @@ function pcontainer(name,container,dobencode) {
     output('<pre>'+container.toJson()+'</pre>');
     if (dobencode!=undefined) {
         output('<h3>bencoded (for signature)<h3>');
-        output(container.bencode());
+        output(container.toBencode());
     }
     output('<hr>');   
 }

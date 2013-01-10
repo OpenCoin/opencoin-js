@@ -22,7 +22,7 @@ cdd.invalidation_service =  [[10,'http://opencent.org']];
 cdd.denominations=[1,2,3];
 cdd.additional_info='';
 json1 = cdd.toJson();
-bc1 = cdd.bencode();
+bc1 = cdd.toBencode();
 
 
 cddc = new oc.c.CDDCertificate();

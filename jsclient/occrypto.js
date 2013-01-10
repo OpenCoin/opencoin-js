@@ -20,6 +20,11 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         return sha256_digest(text);
     }
 
+    this.hashContainer = function (container) {
+        return this.s2b(sha256_digest(container.toBencode()),16);
+    }
+
+
     this.pad = function (message,len) {
         if (len==undefined) len=1024;
         var missing = len - message.length;
@@ -57,6 +62,16 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         var newhash = this.b2s(clear,16).toLowerCase();
         return (orighash == newhash);
     
+    }
+
+    this.signContainer = function (privkey,container) {
+        var hash = this.hashContainer(container);
+        return this.sign(privkey,hash);
+    }
+
+    this.verifyContainerSignature = function(pubkey,container,signature) {
+        var orighash = this.hashContainer(container);
+        return this.verify(pubkey,orighash,signature);
     }
 
     this.guessKeyLength = function(key) {
