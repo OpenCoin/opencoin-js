@@ -131,7 +131,7 @@ rqrn = new oc.c.RequestRenewal();
 rqrn.message_reference = 5;
 rqrn.transaction_reference = tref2;
 rqrn.coins = [coin];
-rqrn.tokens = [blank2];
+rqrn.tokens = [blind2];
 pcontainer('Message: Request renewal',rqrn);
 
 rsrn = new oc.c.ResponseRenewal();

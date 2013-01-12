@@ -21,7 +21,9 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
     }
 
     this.hashContainer = function (container) {
-        return this.s2b(sha256_digest(container.toBencode()),16);
+        var bencoded = container.toBencode();
+        //console.log(bencoded);
+        return this.s2b(sha256_digest(bencoded),16);
     }
 
 
