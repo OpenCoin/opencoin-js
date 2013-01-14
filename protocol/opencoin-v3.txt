@@ -314,7 +314,7 @@ public key = {
 
 2.1.4 tokens
 
-struct: blank {
+struct: token {
     type                = 'token'
     protocol_version    = http://opencoin.org/OpenCoinProtocol/1.0
     issuer_id           = base64(hash(public master key))
@@ -411,7 +411,7 @@ struct: request_validation {
     message_reference: integer,
     transaction_reference: crypto_random_number,
     authorization_info: string,
-    tokens: [n blanks]
+    blinds: [n blinds]
 }
 
 struct: response_validation {
@@ -429,7 +429,7 @@ struct: request_renewal {
     message_reference: integer,
     transaction_reference: crypto_random_number,
     coins: [n coins],
-    tokens: [n blanks]
+    blinds: [n blinds]
 }
 
 struct: response_renewal {
