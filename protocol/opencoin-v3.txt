@@ -1,6 +1,6 @@
 OpenCoin Project         http://opencoin.org/           Category: Draft
 
-                    OPENCOIN V3 PROTOCOL DRAFT 0.1
+                    OPENCOIN V3 PROTOCOL DRAFT 0.1a
 
 Status of this Memo
 ===================
