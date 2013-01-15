@@ -1,6 +1,7 @@
 oc.crypto = {};
 oc.crypto.rsa_sha256_chaum86 = new function() {
     this.identifier = 'RSA-SHA512-CHAUM86';
+    this.default_key_length = 1024;
 
     this.s2b = function (text,base) {
         if (base==undefined) base = 10;
@@ -103,7 +104,32 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         return multMod(unblinder,bs,pubkey.modulus);
     }
 
-    this.makeKeys = function (length) {}
+    this.makeKey = function (length) {
+        if (length==undefined) length = this.default_key_length;
+
+        var e = this.s2b('65537');
+        var l = length/2;
+        var i = 1;
+        var j = 1;
+        while (1) {
+            while (1) {
+                var r1 = randTruePrime(l);
+                var r2 = randTruePrime(l);
+                if (!equals(r1,r2) && !equalsInt(mod(r2,e),1)) {
+                    break;
+                }
+            }
+            var n = mult(r1,r2);
+            var phi = mult(addInt(r1,-1),addInt(r2,-1));
+            var d = inverseMod(e,phi)
+            if (d) break;
+        }
+        var priv = new oc.c.RSAPrivateKey();
+        priv.modulus = n;
+        priv.public_exponent = e;
+        priv.private_exponent = d;
+        return priv;
+    }
 
 }();
 
