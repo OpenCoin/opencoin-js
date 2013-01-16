@@ -1,7 +1,7 @@
 suite = oc.crypto.rsa_sha256_chaum86;
 api = new oc.api(suite);
 
-issuer_private = suite.makeKey(1024);
+issuer_private = suite.makeKey();
 issuer_public = issuer_private.getPublicKey();
 
 params = {};
@@ -63,7 +63,7 @@ output('<hr>');
 
 rqmk = new oc.c.RequestMintKeys();
 rqmk.message_reference = 3;
-rqmk.mint_key_ids = ["8cadb7e3e0b1ca97283304f2b497ff40bd5a6163de8427bffa817f40c8df5085"];
+rqmk.mint_key_ids = [mkc.mint_key.id];
 pcontainer('Message: Request MintKeys (by id)',rqmk);
 
 rqmk2 = new oc.c.RequestMintKeys();
@@ -91,7 +91,7 @@ rqv = new oc.c.RequestValidation();
 rqv.message_reference = 4;
 rqv.transaction_reference = tref;
 rqv.authorization_info = 'mysecret';
-rqv.tokens = [blind];
+rqv.blinds = [blind];
 pcontainer('Message: Request validation',rqv);
 
 
@@ -126,7 +126,7 @@ rqrn = new oc.c.RequestRenewal();
 rqrn.message_reference = 5;
 rqrn.transaction_reference = tref2;
 rqrn.coins = [coin];
-rqrn.tokens = [blind2];
+rqrn.blinds = [blind2];
 pcontainer('Message: Request renewal',rqrn);
 
 rsrn = new oc.c.ResponseRenewal();
