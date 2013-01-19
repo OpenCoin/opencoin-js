@@ -41,8 +41,8 @@ Opencoin consists of the following entities:
         * _Certificate Authority (CA)_: masterkey, CDD ("currency description
           document")
 
-        * _Mint_ is a service which signs blinded blanks and creates 
-          blinded coins
+        * _Mint_ is a service which signs blinded payload hashes and creates 
+          blinded signatures
    
         * _Double Spending Data Base (DSDB)_ stores the serials (and 
           potentially signatures) of all renewed coins in order to 
@@ -81,30 +81,31 @@ Opencoin consists of the following entities:
     * _Client_ is the application of a user which interacts with the 
       other entities. It manages the wallet.
 
-    * _Tokens_ are blanks, blinds, and coins. Their lifecycle is:
+    * _Tokens_ are payloads, blinds, and coins. Their lifecycle is:
 
-        * Client: unsigned token ("blank") 
+        * Client: creates yet unsigned payload ("blank") 
 
-        * Client: ==[hash]==> token hash
+        * Client: ==[padded hash]==> payload hash
    
-        * Client: ==[blind]==> blinded token hash ("blind")
+        * Client: ==[blind]==> blinded payload hash ("blind")
    
-        * Mint: ==[sign]==>       signature of blind token hash 
-                            a.k.a blind signature of token hash
+        * Mint: ==[sign]==>       signature of blinded payload hash 
+                            a.k.a blind signature of payload hash
                             a.k.a ("blind signature")
                        
-        * Client: ==[unblind]==>  signature of token hash
+        * Client: ==[unblind]==>  signature of payload hash
    
-        * Client: ==[attach to unsigned token]==> signed token="coin"
+        * Client: ==[combine with unsigned payload]==> signed payload 
+                                                       a.k.a. "coin"
   
-    * _Blank_ is prepared by the client which subsequently converts it 
-      into a blind.
+    * _Payload_ is prepared by the client (and while it doesn't have a 
+      signature it's called "blank")
   
-    * Blind is the blinded hash of a blank. It is send from the clien to 
-      the mint.
+    * Blind is the blinded padded hash of a payload. It is send from 
+      the client to the mint.
   
-    * Coin consists of a blank and the mint's signature of the 
-      particular blank.
+    * Coin consists of a payload and the mint's signature of the 
+      particular payload.
   
     * Wallet is a file which contains tokens (e.g. coins) and is managed
       by the client.
@@ -151,10 +152,10 @@ Encodings:
 
 Container signing:
 
-    * container = json(datastructure)
-    
-    * signed_container = 
-      json({'container':container,'signature':signature})
+    * signature = sign(padded_hash(bencode_serialized(container)))
+      signed_container = {type:<type>,
+                          <attribute_name>:container,
+                          'signature':signature}
 
 Rules:
 
@@ -181,8 +182,8 @@ struct: CDD
         
         * cdd location = URL: http://opencent.net/OpenCent ) 
           [[This is not an identifier. This URL is required to be 
-          embedded in tokens. DOES IT NEED TO BE UNIQUE FOR EACH CDD AND
-          VERSION?]]
+          embedded in payloads. DOES IT NEED TO BE UNIQUE FOR EACH CDD
+          AND VERSION?]]
           
         * cdd serial number = positive integer, incremental [[Purpose is
           to distinguish different versions of a CDD]]
@@ -264,13 +265,9 @@ A complete CDD serialized into json may look like this:
 structure of cdd with signature:
 
 {'type': 'cdd certificate',
- 'cdd': json(cdd),
- 'signature'  : 'abcdefghai'}
+ 'cdd': cdd,
+ 'signature'  : signature(cdd)}
  
-That  gives us:
-
-{"signed_data": "{\'protocol_version\'         : \'http://opencoin.org/OpenCoinProtocol/1.0\',\\n \'issuer_public_master_key\' : \'fdslllfdsajfd9s9ekfjlfsdajlkjfds\',\\n \'issuer_cipher_suite\'      : \'SHA512-RSA-CHAUM83\',\\n \'cdd_serial\'               : 1,\\n \'cdd_signing_date\'         : \'2012-06-01T18:30\',\\n \'cdd_expiry_date\'          : \'2012-06-01T18:30\',\\n \'currency_name\'            : \'My Currency\',\\n \'currency_divisor\'         : 100,\\n \'info_service\'             : [[30,\'http://some.server\'],\\n                               [10,\'xmpp://info@some.server\']],\\n \'validation_service\'       : [[10,\'http://some.server\'],\\n                               [10,\'xmpp://info@some.server\']],\\n \'renewal_service\'          : [[20,\'http://other.server\']],\\n \'invalidation_service\'     : [[20,\'http://some.server\']],\\n \'denominations\'            : [1,2,5,10],\\n \'additional_info\'          : \'happy day\'}", 
-"signature": "682e5d39dfb35dd4afe57ed4ef307180"}
 
 
 2.1.3 The minting keys
@@ -296,8 +293,8 @@ struct: mint key = {
 
 
 struct: mint key certificate {
-    type = 'mint key certificate'
-    mint_key      = json_encode(mint key),
+    type      = 'mint key certificate'
+    mint_key  = mint key,
     signature = base64(signature) The mint key is signed with the issuer
                 master key.
 }
@@ -314,8 +311,8 @@ public key = {
 
 2.1.4 tokens
 
-struct: token {
-    type                = 'token'
+struct: payload {
+    type                = 'payload'
     protocol_version    = http://opencoin.org/OpenCoinProtocol/1.0
     issuer_id           = base64(hash(public master key))
     cdd_location        = http://opencent.net/OpenCent [[Hint to 
@@ -332,14 +329,14 @@ struct: token {
 }
 
 struct: blind = {
-    type = 'blinded token hash'
+    type = 'blinded payload hash'
     reference = integer [[To be chosen by client in order to reference 
-                between blinded blank and blinded coin. Can be random or
-                incremental but should be unique within one gwop. MUST 
-                NOT be derived from serial number or blinded factor.]]
-    blinded_token_hash = base64(blind(prepare_signing(hash(serialize(token))))) 
-    RSA_blind(BigInt(hash(serialize(token))))
-    ECC_blind(ECC_Point(hash(serialize(token))))
+                between blinded payload and blind signature. Can be 
+                random or incremental but should be unique within one gwop. 
+                MUST NOT be derived from serial number or blinded factor.]]
+    blinded_payload_hash = base64(blind(prepare_signing(hash(serialize(payload))))) 
+    RSA_blind(BigInt(hash(serialize(payload))))
+    ECC_blind(ECC_Point(hash(serialize(payload))))
     mint_key_id  = base64(hash(public mint key))  [[The client should
                    select a random mint key (for the appropriate 
                    denomination) to prevent the issuer from smuggling in
@@ -349,14 +346,15 @@ struct: blind = {
 struct: blind signature = {
     type      = 'blind signature'
     reference = integer
-    blind_signature = base64(signature(base64_decode(blinded_token_hash)))
+    blind_signature = base64(signature(base64_decode(blinded_payload_hash)))
 }
 
 struct: coin = {
     type      = 'coin', 
-    token     = json_encode(token),
+    payload     = payload,
     signature = base64(unblind(base64decode(blind_signature)))
 }
+
 
 2.2.1 Message Types
 
@@ -384,7 +382,7 @@ struct: response_cdd {
     message_reference: integer,
     status_code: integer,
     status_description: string,
-    cdd: json_encode(cdd)
+    cdd: cdd
 }
 
 struct: request_mint_keys{
@@ -508,30 +506,30 @@ ERROR CODES:
 2.3.1 Order of actions/messages
     * Alice should fetch and verify CDD [revocation check of master key]
     * Alice should fetch and verify current Mintkeys [revocation check]
-    * Alice prepares blanks
+    * Alice creates new payloads ("blanks")
     * Alice requests validation [authorization might happen here]
     * Mint responds with signatures [or delay]
     * Alice unblinds and verifies signatures
-    * Alice attaches signatures to blanks
+    * Alice attaches signatures to payloads (results in coins)
 
     * Alice sends coins to Bob
     * (Bob might respond "received" to Alice. Trusted case.)
     * If not cached, Bob fetches and verify CDD. [revocation check of 
                                                   master key]
     * Bob selects preferred denominations for new coins.
-    * Bob should fetch and verify mint key certificates associated to 
-      received coins and blanks, if not cached.) [revocation check] To 
-      mitigate traffic analysis, client may want to fetch more keys than
-      required.
+    * Bob should fetch and verify mint key certificates associated with 
+      selected denominations and received coins, if not cached. 
+      [revocation check] To mitigate traffic analysis, client may want 
+      to fetch more keys than required.
     * Bob verifies coins using mint key
-    * Bob prepares blanks
+    * Bob creates new payloads
     * Bob requests renewal
     * Mint signs blinds
     * Mint writes old coins in dsdb
         * Instant response:
             * Mint responds with signatures
             * Bob unblinds and verifies signatures
-            * Bob attaches signatures to blanks
+            * Bob attaches signatures to payloads (->coins)
             * (Bob might respond OK to Alice)
         * Delayed response:
             * Mint responds with 'delayed'
@@ -539,7 +537,7 @@ ERROR CODES:
             * Bob requests resume
             * Mint responds with signatures
             * Bob unblinds and verifies signatures
-            * Bob attaches signatures to blanks
+            * Bob attaches signatures to payloads (->coins)
             * (Bob might respond OK to Alice)
     * Bob requests invalidate (with authorizer or payment (?) message)
     * Issuer stores old coins in dsdb
