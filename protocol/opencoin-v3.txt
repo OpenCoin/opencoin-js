@@ -264,8 +264,8 @@ A complete CDD serialized into json may look like this:
 structure of cdd with signature:
 
 {'type': 'cdd certificate',
- 'cdd': json(cdd),
- 'signature'  : 'abcdefghai'}
+ 'cdd': cdd,
+ 'signature'  : signature(cdd)}
  
 
 
@@ -293,7 +293,7 @@ struct: mint key = {
 
 struct: mint key certificate {
     type      = 'mint key certificate'
-    mint_key      = json_encode(mint key),
+    mint_key  = mint key,
     signature = base64(signature) The mint key is signed with the issuer
                 master key.
 }
@@ -350,7 +350,7 @@ struct: blind signature = {
 
 struct: coin = {
     type      = 'coin', 
-    token     = json_encode(token),
+    token     = token,
     signature = base64(unblind(base64decode(blind_signature)))
 }
 
@@ -380,7 +380,7 @@ struct: response_cdd {
     message_reference: integer,
     status_code: integer,
     status_description: string,
-    cdd: json_encode(cdd)
+    cdd: cdd
 }
 
 struct: request_mint_keys{
