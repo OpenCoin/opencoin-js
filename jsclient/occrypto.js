@@ -79,7 +79,8 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
 
     this.guessKeyLength = function(key) {
         var l = key.modulus.length;
-        if (l <=50) return 512;
+        if (l<=21) return 260;
+        else if (l > 22 && l<=50) return 512;
         else if (100 > l && l > 50) return 1024;
         else if ( 200 > l && l > 101) return 2048;
         else if (l >= 200) return 4096;

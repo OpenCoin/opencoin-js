@@ -8,7 +8,7 @@ oc.addContainer('ResponseCDDSerial','response cdd serial').prototype.fields = {
     'message_reference' : new oc.f.Field(),
     'status_code':        new oc.f.Field(),
     'status_description': new oc.f.Field(),
-    'serial':             new oc.f.Field()};
+    'cdd_serial':         new oc.f.Field()};
 
 
 oc.addContainer('RequestCDD','request cdd').prototype.fields = {
@@ -20,7 +20,7 @@ oc.addContainer('ResponseCDD','response cdd').prototype.fields = {
     'message_reference' : new oc.f.Field(),
     'status_code':        new oc.f.Field(),
     'status_description': new oc.f.Field(),
-    'cdd':                new oc.f.ContainerField(oc.c.CDD)};
+    'cdd':                new oc.f.ContainerField(oc.c.CDDCertificate)};
 
 
 oc.addContainer('RequestMintKeys','request mint keys').prototype.fields = {

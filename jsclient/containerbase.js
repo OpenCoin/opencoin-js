@@ -1,6 +1,8 @@
 oc = new function OpenCoin() {
     this.c = {}; //containers
     this.f = {}; //fields
+    this.registry = {}; //comined registry using types as key
+
     this.addContainer = function(name,type,prototype) {
         if (this.c[name]!=undefined) {
             throw 'Container already exists';  
@@ -18,6 +20,7 @@ oc = new function OpenCoin() {
         container.prototype.constructor = container;
         container.prototype.constructor.name = name;
         this.c[name] = container;
+        this.registry[type] = container;
         return this.c[name];
     }    
 }()
@@ -56,7 +59,11 @@ oc.f.DateField.prototype.fromData = function(data,master) {
     else return data
 }
 oc.f.DateField.prototype.toData = function(data,master) {
-    if (data) return data.toISOString();    
+    if (data) {
+        var out =  data.toISOString();    
+        out = out.slice(0,-5)+'Z';
+        return out
+    }
     else return data;
 }
 
@@ -173,7 +180,7 @@ oc.c.Container.prototype.fromData = function (data,master) {
     return this;
 }
 oc.c.Container.prototype.toData = function(ignored,master) {
-    var out = {}
+    var out = {};
     if (master==undefined) var master = this;
     for (name in this.fields) {
         out[name] = this.fields[name].toData(this[name],master);    

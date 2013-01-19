@@ -1,4 +1,5 @@
 ////////////////// Containers //////////////////
+oc.type_registry = {};
 
 oc.addContainer('RSAPublicKey','rsa public key').prototype.fields = {
     'modulus':         new oc.f.Base64Field(),
@@ -8,6 +9,7 @@ oc.addContainer('RSAPrivateKey','rsa private key').prototype.fields = {
     'modulus':          new oc.f.Base64Field(),
     'public_exponent':  new oc.f.Base64Field(),
     'private_exponent': new oc.f.Base64Field()};
+
 oc.c.RSAPrivateKey.prototype.getPublicKey = function () {
     var pub = new oc.c.RSAPublicKey();
     pub.modulus = this.modulus;
@@ -82,8 +84,5 @@ oc.addContainer('BlindSignature','blind signature').prototype.fields = {
 oc.addContainer('Coin','coin').prototype.fields = {
     'token':        new oc.f.ContainerField(oc.c.Blank),
     'signature':    new oc.f.Base64Field()};
-
-
-
 
 

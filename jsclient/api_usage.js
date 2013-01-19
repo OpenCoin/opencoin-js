@@ -43,7 +43,7 @@ responsecddserial = new oc.c.ResponseCDDSerial();
 responsecddserial.message_reference = 1;
 responsecddserial.status_code = 200;
 responsecddserial.status_description = 'ok';
-responsecddserial.serial = 1;
+responsecddserial.cdd_serial = 1;
 pcontainer('Message: Response CDD Serial',responsecddserial);
 
 rqcdd = new oc.c.RequestCDD();

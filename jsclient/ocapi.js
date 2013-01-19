@@ -22,6 +22,8 @@ oc.api = function opencoin_api (suite) {
         return cddc;
     }
 
+
+
     this.makeMKC = function (issuer_privkey,cddc,params) {
         var mk = new oc.c.MintKey();        
         //here we would actually genereate a mintkey
@@ -30,7 +32,7 @@ oc.api = function opencoin_api (suite) {
         var mint_privkey = this.makeKey();
         mk.public_mint_key = mint_privkey.getPublicKey();
         mk.id = this.suite.hash(mk.public_mint_key.toBencode());
-        mk.issuer_id = this.suite.hash(issuer_privkey.getPublicKey().toBencode());
+        mk.issuer_id = this.getKeyId(issuer_privkey.getPublicKey());
         mk.cdd_serial = cddc.cdd.cdd_serial;
         mk.denomination = params.denomination;
         mk.sign_coins_not_before = params.notBefore;
@@ -45,6 +47,10 @@ oc.api = function opencoin_api (suite) {
         return out;
 
     };
+
+    this.getKeyId = function(key) {
+        return this.suite.hash(key.toBencode());
+    }
 
     this.makeBlind = function(cddc,mkc,reference) {
         var out, serial, mk, pub, keylength, tmp, token,hash,hashnumber, blind;
@@ -96,87 +102,86 @@ oc.api = function opencoin_api (suite) {
 
         return coin;
     }
-}
+
+    this.sumArray = function (a) {
+        var s = 0;
+        for (var i in a) {
+            s += a[i];    
+        }
+        return s;
+    }
+
+    this.compI = function (a,b) {return a-b}
+
+    this.tokenize = function (denominations,amount) {
+        /* this gives us a selection of tokens (elements of denominations)
+        that allows to pay anything smaller or equal to amount. This is desired
+        as a state for a senders wallet - it makes sure that you can always pay
+        at least once without running to the issuer beforehand*/
+
+        denominations = denominations.sort(this.compI);
+        var tokens = [];
+        var i = 0;
+        var max_i = denominations.length-1;
+        var d, rest;
+        while (this.sumArray(tokens) < amount) {
+            if (i>max_i) i = max_i;
+            d = denominations[i];
+            rest = amount - this.sumArray(tokens);
+            if (d==1) {
+                tokens[tokens.length] = 1;
+                i += 1;
+            } else if (d <= rest - d + denominations[i-1]+1) {
+                tokens[tokens.length] = d;
+                i +=1;
+            } else if (d > rest -d + denominations[i-1]+1) {
+                i -= 1;      
+            }
+            
+        }
+        tokens = tokens.sort(this.compI);
+        return tokens;
+    }
+
+    this.prepare_for_exchange = function (denominations,oldcoins,newcoins) {
+        /*returns [[values to kepp],[values to pay], [values to blank]
+          values to keep are the ones that don't need changing
+          values to pay are oldcoins, that we need to send to pay for [values to blank]
+            (and we send all new coins to pay for [values to blank] as well)
+          values to blank are the values that we want to have back from the issuer
+
+        so, we send to the issuer: newcoins + values to pay
+        and ask for: values to blank
+        */
         
+        oldcoins = oldcoins.sort(this.compI);
+        oldcoins = oldcoins.reverse();
 
+        newcoins = newcoins.sort(this.compI);
+        newcoins = newcoins.reverse();
 
-    /*
-    
-    storage
-    =======          |from here on is the actual storage object
-    {id(issuer_key): {
-        'cdds': {serial:cddc,
-                 ...},
-        'mintkeys': {id:{'mkc':mkc,
-                         'private_key':key},                         
-                     ...,
-                     'bydate':{date:[id,...],
-                               ...},
-                     'denominations':{denomination:id,
-                                      ...},
-                     },
-        'private_key': key,
-        'blanks':{tref:[blank,blank,...],
-                  ...},
-        'blinds':{reference:[[blinded_hash,secret],[],..],
-                  ...},
-        'coins':{denomination:[coin,...],
-                 ...},
-        'message_queue':{'next_id':id,
-                         'id':message,
-                         ...}
-        },
-     ...}
-    
-    requestCDDSerial
-    responseCDDSerial
-    requestCDD
-    responseCDD
-    requestMintKeys
-    responseMintKeys
-    requestValidation
-    responseValidation
-    requestRenewal
-    responseRenewal
-    requestInvalidation
-    responseInvalidation
-    requestResume
-    sendCoins
-    receivedCoins
-   
-    requestCDDSerial(storage) -> message
-    responseCDDSerial(message,storage) -> message
-    requestCDD(storage,serial) -> message
-    responseCDD(message,storage) -> message
-    requestMintKeys(storage,mintkeyids,denominations) -> message
-    responseMintKeys(message,storage) -> message
-    requestValidation(storage,authinfo,[denomination,...]) -> message, blanks
-    responseValidation(message,storage) -> message
-    requestRenewal(storage,coins) -> message //XXX
-    responseRenewal(message,storage) -> message
-    requestInvalidation(storage,authinfo,coins) -> message
-    responseInvalidation(message,storage) -> message
-    requestResume(storage,tref) -> message
-    sendCoins(storage,subject,coins) -> message
-    receivedCoins(message,status) -> message    
+        var amount = this.sumArray(oldcoins) + this.sumArray(newcoins);
 
+        var target = this.tokenize(denominations,amount);
+        target = target.sort(this.compI);
+        target = target.reverse();
+        var keepold = [];
+        var makenew = [];
+        for (var i in target) {
+            var t = target[i];
+            var ti = oldcoins.indexOf(t);
+            if (ti != -1) {
+                var k = oldcoins.splice(ti,1);
+                keepold[keepold.length] = k[0];
+            } else {
+                makenew[makenew.length] = t;    
+            }
+        }
+        return [keepold,oldcoins,makenew];
+    }
 
-    What apis are more then just Container creation?
-    requestCDDSerial
-    responseCDDSerial
-    requestCDD
-    responseCDD
-    requestMintKeys
-    responseMintKeys
-    requestValidation * -> makeBlind
-    responseValidation * -> signBlind, unblindSignature
-    requestRenewal * -> makeBlind
-    responseRenewal * -> signBlind, applyBlindSignature(blank,blindsignature)
-    requestInvalidation
-    responseInvalidation
-    requestResume
-    sendCoins
-    receivedCoins
-
-
-    */
+    this.getRandomInt = function get (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+}
+ 
