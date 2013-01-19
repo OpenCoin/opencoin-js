@@ -370,7 +370,7 @@ struct: response_cdd_serial {
     message_reference: integer,
     status_code: integer,
     status_description: string,
-    serial: integer
+    cdd_serial: integer
 }
 
 struct: request_cdd {
