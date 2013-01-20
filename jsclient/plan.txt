@@ -1,0 +1,140 @@
+First steps
+===========
+
+runs in browser
+send and receive coins via text copy and paste
+communicates with server via https (+opencoin)
+- ability to store local data
+- fetch cdds and mintkeys
+- validate, refresh, redeem
+- send
+- receive
+
+
+- Containers
+- api that combines crypto and containers
+  - transformation from one into the other
+  container - oc.crypto - rsa backend mechanism
+              - public key
+                - encrypt
+                - verify
+                - blind
+                - unblind
+
+              - private key
+                - decrypt
+                - verify
+               
+              - hash
+                - hash
+
+              - bigint
+                -s2b('1234') -> 1234;
+                -b2s(1234) -> '1234';
+                -
+
+
+    storage
+    =======          |from here on is the actual storage object
+    {id(issuer_key): {
+        'cdds': {serial:cddc,
+                 ...},
+        'mintkeys': {id:{'mkc':mkc,
+                         'private_key':key},                         
+                     ...,
+                     'bydate':{date:[id,...],
+                               ...},
+                     'denominations':{denomination:[id,...],
+                                      ...},
+                     },
+        'private_keys': {id:key},
+        'validation':{tref:{reference:{'r':r,
+                                       'blind':blind,
+                                       'payload':payload,...},
+                            ...}
+                      ...}
+        'coins':{denomination:[coin,...],
+                 ...},
+        'message_queue':{'next_id':id,
+                         'id':message,
+                         ...}
+        },
+     ...}
+    
+    requestCDDSerial
+    responseCDDSerial
+    requestCDD
+    responseCDD
+    requestMintKeys
+    responseMintKeys
+    requestValidation
+    responseValidation
+    requestRenewal
+    responseRenewal
+    requestInvalidation
+    responseInvalidation
+    requestResume
+    sendCoins
+    receivedCoins
+   
+    requestCDDSerial(storage) -> message
+    responseCDDSerial(message,storage) -> message
+    requestCDD(storage,serial) -> message
+    responseCDD(message,storage) -> message
+    requestMintKeys(storage,mintkeyids,denominations) -> message
+    responseMintKeys(message,storage) -> message
+    requestValidation(storage,authinfo,[denomination,...]) -> message, payloads
+    responseValidation(message,storage) -> message
+    requestRenewal(storage,coins) -> message //XXX
+    responseRenewal(message,storage) -> message
+    requestInvalidation(storage,authinfo,coins) -> message
+    responseInvalidation(message,storage) -> message
+    requestResume(storage,tref) -> message
+    sendCoins(storage,subject,coins) -> message
+    receivedCoins(message,status) -> message    
+
+
+    What apis are more then just Container creation?
+    requestCDDSerial
+    responseCDDSerial
+    requestCDD
+    responseCDD
+    requestMintKeys
+    responseMintKeys
+    requestValidation * -> makeBlind
+    responseValidation * -> signBlind, unblindSignature
+    requestRenewal * -> makeBlind
+    responseRenewal * -> signBlind, applyBlindSignature(payload,blindsignature)
+    requestInvalidation
+    responseInvalidation
+    requestResume
+    sendCoins
+    receivedCoins
+
+
+    addCurrency(storage,cdd)
+
+    requestCDDSerial(storage) -> message
+    handleCDDSerial(storage,message)
+    requestCDD(storage,serial) -> message
+    * requestCurrentCDD(storage) -> message
+    requestMintKeys(storage,mintkeyids,denominations) -> message
+    * requestCurrentMintKeys(storage) -> message
+    requestValidation(storage,authinfo,amount) -> message
+    requestRenewal(storage,coins) -> message
+    * refreshCoins(storage) -> message
+    requestInvalidation(storage,authinfo,coins) -> message
+    requestResume(storage,tref) -> message
+    sendCoins(storage,subject,amount) -> message
+    receivedCoins(storage,message) -> message
+
+    dispatcher(storage,message)
+        -> responseCDDSerial(storage,message) -> message
+        -> responseCDD(storage,message) -> message
+        -> responseMintKeys(storage,message) -> message
+        -> responseValidation(storage,message) -> message
+        -> responseRenewal(storage,message) -> message
+        -> responseInvalidation(storage,message) -> message
+
+
+
