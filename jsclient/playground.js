@@ -50,18 +50,18 @@ mkc.mint_key = mk;
 mkc.signature = 'my signature';
 pcontainer('MintKey Certificate',mkc);
 
-blank = new oc.c.Blank();
-blank.protocol_version = 'http://opencoin.org/1.0';
-blank.issuer_id = 'abcd';
-blank.cdd_location = 'http://opencent.org';
-blank.denomination = 1;
-blank.mint_key_id = '1234';
-blank.serial = '789abc';
-pcontainer('Blank',blank,1);
+payload = new oc.c.Payload();
+payload.protocol_version = 'http://opencoin.org/1.0';
+payload.issuer_id = 'abcd';
+payload.cdd_location = 'http://opencent.org';
+payload.denomination = 1;
+payload.mint_key_id = '1234';
+payload.serial = '789abc';
+pcontainer('Payload',payload,1);
 
 blind = new oc.c.Blind();
 blind.reference = 'b1';
-blind.blinded_token_hash = 'aaabbbccc';
+blind.blinded_payload_hash = 'aaabbbccc';
 blind.mint_key_id = '1234';
 pcontainer('Blind',blind);
 
@@ -71,7 +71,7 @@ bsignature.blind_signature = 'xxx123';
 pcontainer('Blind Signature',bsignature);
 
 coin = new oc.c.Coin();
-coin.token = blank;
+coin.payload = payload;
 coin.signature = 'yyy345';
 pcontainer('Coin',coin);
 
@@ -120,7 +120,7 @@ rqv = new oc.c.RequestValidation();
 rqv.message_reference = 4;
 rqv.transaction_reference = 111222333;
 rqv.authorization_info = 'mysecret';
-rqv.tokens = [blind];
+rqv.payloads = [blind];
 pcontainer('Message: Request validation',rqv);
 
 rsv = new oc.c.ResponseValidation();
@@ -141,7 +141,7 @@ rqrn = new oc.c.RequestRenewal();
 rqrn.message_reference = 5;
 rqrn.transaction_reference = 444555666;
 rqrn.coins = [coin];
-rqrn.tokens = [blank];
+rqrn.payloads = [payload];
 pcontainer('Message: Request renewal',rqrn);
 
 rsrn = new oc.c.ResponseRenewal();
@@ -210,6 +210,6 @@ signature2 = suite.signtext(priv,message2);
 outcome = suite.verifytext(pub,message2,signature2);
 
 b = suite.blind(pub,message);
-blindsignature = suite.sign(priv,b.blinded_token_hash);
+blindsignature = suite.sign(priv,b.blinded_payload_hash);
 signature3 = suite.unblind(pub,blindsignature,b.r);
 outcome = suite.verify(pub,message,signature3);

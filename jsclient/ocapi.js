@@ -53,36 +53,36 @@ oc.api = function opencoin_api (suite) {
     }
 
     this.makeBlind = function(cddc,mkc,reference) {
-        var out, serial, mk, pub, keylength, tmp, token,hash,hashnumber, blind;
+        var out, serial, mk, pub, keylength, tmp, payload,hash,hashnumber, blind;
         mk = mkc.mint_key;
         pub = mk.public_mint_key;
         //keylength = suite.guessKeyLength(pub);
 
-        token = new oc.c.Blank();
-        token.protocol_version = cddc.cdd.protocol_version;
-        token.issuer_id = this.suite.hash(cddc.cdd.issuer_public_master_key.toBencode());
-        token.cdd_location = cddc.cdd.cdd_location;
-        token.denomination = mk.denomination;
-        token.mint_key_id = mk.id;
-        token.serial = this.suite.getRandomNumber(128);
+        payload = new oc.c.Payload();
+        payload.protocol_version = cddc.cdd.protocol_version;
+        payload.issuer_id = this.suite.hash(cddc.cdd.issuer_public_master_key.toBencode());
+        payload.cdd_location = cddc.cdd.cdd_location;
+        payload.denomination = mk.denomination;
+        payload.mint_key_id = mk.id;
+        payload.serial = this.suite.getRandomNumber(128);
         
-        hash = this.suite.paddedhashContainer(pub,token);
+        hash = this.suite.paddedhashContainer(pub,payload);
         tmp = this.suite.blind(pub,hash);
         
         blind = new oc.c.Blind();
         blind.reference = reference;
-        blind.blinded_token_hash = tmp.blinded_token_hash;
+        blind.blinded_payload_hash = tmp.blinded_payload_hash;
         blind.mint_key_id = mk.id;
 
         out = {};
-        out.blank = token;
+        out.payload = payload;
         out.blind = blind;
         out.r = tmp.r;
         return out;
     }
 
     this.signBlind = function(mkpriv,blind) {
-        var signature = this.suite.sign(mkpriv,blind.blinded_token_hash);
+        var signature = this.suite.sign(mkpriv,blind.blinded_payload_hash);
         
         var blindsignature = new oc.c.BlindSignature();
         blindsignature.reference = blind.reference;
@@ -91,13 +91,13 @@ oc.api = function opencoin_api (suite) {
         return blindsignature;
     }
 
-    this.makeCoin = function (blank,blindsignature,r,mkc) {
+    this.makeCoin = function (payload,blindsignature,r,mkc) {
         var pub = mkc.mint_key.public_mint_key;
         var signature = this.suite.unblind(pub,blindsignature.blind_signature,r);
 
-        if (!this.suite.verifyContainerSignature(pub,blank,signature)) throw 'verification failed';    
+        if (!this.suite.verifyContainerSignature(pub,payload,signature)) throw 'verification failed';    
         var coin = new oc.c.Coin();
-        coin.token = blank;
+        coin.payload = payload;
         coin.signature = signature;
 
         return coin;
@@ -114,44 +114,44 @@ oc.api = function opencoin_api (suite) {
     this.compI = function (a,b) {return a-b}
 
     this.tokenize = function (denominations,amount) {
-        /* this gives us a selection of tokens (elements of denominations)
+        /* this gives us a selection of payloads (elements of denominations)
         that allows to pay anything smaller or equal to amount. This is desired
         as a state for a senders wallet - it makes sure that you can always pay
         at least once without running to the issuer beforehand*/
 
         denominations = denominations.sort(this.compI);
-        var tokens = [];
+        var payloads = [];
         var i = 0;
         var max_i = denominations.length-1;
         var d, rest;
-        while (this.sumArray(tokens) < amount) {
+        while (this.sumArray(payloads) < amount) {
             if (i>max_i) i = max_i;
             d = denominations[i];
-            rest = amount - this.sumArray(tokens);
+            rest = amount - this.sumArray(payloads);
             if (d==1) {
-                tokens[tokens.length] = 1;
+                payloads[payloads.length] = 1;
                 i += 1;
             } else if (d <= rest - d + denominations[i-1]+1) {
-                tokens[tokens.length] = d;
+                payloads[payloads.length] = d;
                 i +=1;
             } else if (d > rest -d + denominations[i-1]+1) {
                 i -= 1;      
             }
             
         }
-        tokens = tokens.sort(this.compI);
-        return tokens;
+        payloads = payloads.sort(this.compI);
+        return payloads;
     }
 
     this.prepare_for_exchange = function (denominations,oldcoins,newcoins) {
-        /*returns [[values to kepp],[values to pay], [values to blank]
+        /*returns [[values to kepp],[values to pay], [values to payload]
           values to keep are the ones that don't need changing
-          values to pay are oldcoins, that we need to send to pay for [values to blank]
-            (and we send all new coins to pay for [values to blank] as well)
-          values to blank are the values that we want to have back from the issuer
+          values to pay are oldcoins, that we need to send to pay for [values to payload]
+            (and we send all new coins to pay for [values to payload] as well)
+          values to payload are the values that we want to have back from the issuer
 
         so, we send to the issuer: newcoins + values to pay
-        and ask for: values to blank
+        and ask for: values to payload
         */
         
         oldcoins = oldcoins.sort(this.compI);

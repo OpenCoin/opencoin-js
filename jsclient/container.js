@@ -61,7 +61,7 @@ oc.addContainer('MintKeyCertificate','mint key certificate').prototype.fields = 
     'signature': new oc.f.Base64Field()};
 
 
-oc.addContainer('Blank','token').prototype.fields = {
+oc.addContainer('Payload','payload').prototype.fields = {
     'protocol_version':   new oc.f.Field(),
     'issuer_id':          new oc.f.Field(),
     'cdd_location':       new oc.f.Field(),
@@ -70,9 +70,9 @@ oc.addContainer('Blank','token').prototype.fields = {
     'serial':             new oc.f.Base64Field()};
 
 
-oc.addContainer('Blind','blinded token hash').prototype.fields = {
+oc.addContainer('Blind','blinded payload hash').prototype.fields = {
     'reference':          new oc.f.Field(),
-    'blinded_token_hash': new oc.f.Base64Field(),
+    'blinded_payload_hash': new oc.f.Base64Field(),
     'mint_key_id':        new oc.f.Field()};
 
 
@@ -82,7 +82,7 @@ oc.addContainer('BlindSignature','blind signature').prototype.fields = {
 
 
 oc.addContainer('Coin','coin').prototype.fields = {
-    'token':        new oc.f.ContainerField(oc.c.Blank),
+    'payload':        new oc.f.ContainerField(oc.c.Payload),
     'signature':    new oc.f.Base64Field()};
 
 

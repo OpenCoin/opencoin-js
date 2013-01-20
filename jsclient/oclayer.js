@@ -238,12 +238,12 @@ oc.layer = function opencoin_layer(api,storage) {
     this.requestValidation = function(authinfo,amount) {
         var message = this.buildMessage('RequestValidation');
         var cddc = this.getCurrentCDDC();
-        var tokens = this.api.tokenize(cddc.cdd.denominations,amount);
+        var payloads = this.api.tokenize(cddc.cdd.denominations,amount);
         var store = {};
         var blinds = [];
         //var refbase = this.api.getRandomInt(100000,999999);
-        for (var i in tokens) {
-            var t = tokens[i];
+        for (var i in payloads) {
+            var t = payloads[i];
             var mkc = this.getCurrentMKC(t);
             var ref = 'r_'+i;
             var parts = this.api.makeBlind(cddc,mkc,ref);
@@ -324,12 +324,12 @@ oc.layer = function opencoin_layer(api,storage) {
         var sum = 0;
         for (ref in store) {
             var parts = store[ref];
-            var mkc = this.storage.mintkeys[parts.blank.mint_key_id];
+            var mkc = this.storage.mintkeys[parts.payload.mint_key_id];
             var s = bsbyref[ref];
             r =  this.api.suite.s2b(parts.r);
-            var coin = this.api.makeCoin(parts.blank,s,r,mkc);
+            var coin = this.api.makeCoin(parts.payload,s,r,mkc);
             this.addCoin(coin);
-            sum += coin.token.denomination;
+            sum += coin.payload.denomination;
         }
         delete this.storage.validation[message.transaction_reference];
         delete this.mq[response.message_reference];
@@ -339,7 +339,7 @@ oc.layer = function opencoin_layer(api,storage) {
 
 
     this.addCoin = function(coin) {
-        var coins = this.setDefault(this.storage.coins,coin.token.denomination,[]);
+        var coins = this.setDefault(this.storage.coins,coin.payload.denomination,[]);
         coins[coins.length] = coin;
     }
 

@@ -83,7 +83,7 @@ var blindout = api.makeBlind(cddc,mkc,'reference_1234');
 
 var r = blindout.r;
 var blind = blindout.blind;
-var blank = blindout.blank;
+var payload = blindout.payload;
 
 var tref = this.suite.b2s(this.suite.getRandomNumber(128));
 
@@ -111,15 +111,15 @@ rsv2.status_description = 'ok';
 rsv2.blind_signatures = [blindsignature];
 pcontainer('Message: Response validation - signatures',rsv2);
 
-var coin = api.makeCoin(blank,blindsignature,r,mkc);
+var coin = api.makeCoin(payload,blindsignature,r,mkc);
 
-output('Verify coin signature: ' + suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin.token,coin.signature));
+output('Verify coin signature: ' + suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin.payload,coin.signature));
 output('<hr>');
 
 var blindout2 = api.makeBlind(cddc,mkc,'reference_5678');
 var r2 = blindout2.r;
 var blind2 = blindout2.blind;
-var blank2 = blindout2.blank;
+var payload2 = blindout2.payload;
 
 var tref2 = this.suite.b2s(this.suite.getRandomNumber(128));
 rqrn = new oc.c.RequestRenewal();
@@ -145,8 +145,8 @@ rsrn2.status_description = 'ok';
 rsrn2.blind_signatures = [blindsignature2];
 pcontainer('Message: Response renewal - signatures',rsrn2);
 
-var coin2 = api.makeCoin(blank2,blindsignature2,r2,mkc);
-output('Verify coin2 signature: ' + suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin2.token,coin2.signature));
+var coin2 = api.makeCoin(payload2,blindsignature2,r2,mkc);
+output('Verify coin2 signature: ' + suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin2.payload,coin2.signature));
 output('<hr>');
 
 

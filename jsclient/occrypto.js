@@ -30,7 +30,6 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         var missing = keylength - shahash.length - 1;
         if (missing<0) throw 'hash is too long for keylength';
         for(var i=1; i<missing; i++) shahash = 'f'+shahash;
-        console.log('x: '+shahash);
         return this.s2b(shahash,16);
     }
 
@@ -90,7 +89,7 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         r = this.getRandomNumber(keylength-1);
         blinder = powMod(r,pubkey.public_exponent,pubkey.modulus);
         blinded_number = multMod(blinder,num,pubkey.modulus);
-        return {'r':r,'blinded_token_hash':blinded_number};
+        return {'r':r,'blinded_payload_hash':blinded_number};
     }
 
 
