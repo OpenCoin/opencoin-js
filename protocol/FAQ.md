@@ -7,10 +7,13 @@ As nice as the metapher is, it doesn't quite work when defining the
 protocol. As we have a data container that is never changed (unlike
 the blank, which gets transformed by minting), and that data container
 only gets combined with a signature into a coin, we used the term 
-payload instead. So, a Payload without signature is equal to a Blank,
-a Blind contains the blinded hash of the Payload, a Blind Signature 
-object holds the blind signature, and a Coin consists of a Payload,
-and a Signature (whih is the unblinded blind signature of the Payload).
+payload instead. Blank might give the impression that its a container 
+that gets modfied in someway, but no modification takes place.
+
+So, a Payload without signature is equal to a Blank, a Blind contains 
+the blinded hash of the Payload, a Blind Signature object holds the 
+blind signature, and a Coin consists of a Payload, and a Signature 
+(which is the unblinded blind signature of the Payload).
 
 
 There are optional fields on some of the messages.
