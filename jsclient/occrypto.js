@@ -4,14 +4,15 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
     this.default_key_length = 260; //in real life 1024,2048 or 4096
 
     this.s2b = function (text,base) {
-        if (base==undefined) base = 10;
+        if (base==undefined) base = 16;
         out =  str2bigInt(text,base,0);    
         return out;
     }
 
+    
     this.b2s = function (num,base) {
-        if (base==undefined) base = 10;
-        return bigInt2str(num,base);    
+        if (base==undefined) base = 16;
+        return bigInt2str(num,base).toLowerCase();    
     }
 
     this.hash = function (text) {
@@ -21,22 +22,20 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         return sha256_digest(text);
     }
 
-    this.hashContainer = function (container) {
+    this.paddedhashContainer = function (pub,container) {
+        //XXX do RSA PSS padding instead (or is it RSASSA-PSS?)
         var bencoded = container.toBencode();
-        //console.log(bencoded);
-        return this.s2b(sha256_digest(bencoded),16);
+        var shahash = sha256_digest(bencoded);
+        var keylength = this.b2s(pub.modulus,16).length;
+        var missing = keylength - shahash.length - 1;
+        if (missing<0) throw 'hash is too long for keylength';
+        for(var i=1; i<missing; i++) shahash = 'f'+shahash;
+        console.log('x: '+shahash);
+        return this.s2b(shahash,16);
     }
 
 
-    this.pad = function (message,len) {
-        if (len==undefined) len=1024;
-        var missing = len - message.length;
-        if (missing<=0) return message;
-        for (i=1; i<missing;i++) {message +='1'}
-        return message;
-    }
-
-    this.sign = function (privkey,message) {
+    this.sign = function (privkey,message) { //rsa low level
         //message is a bigint
         signature = powMod(message,privkey.private_exponent,privkey.modulus);
         //signature is a bigint
@@ -44,7 +43,7 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
     }
 
 
-    this.verify = function (pubkey,message,signature) {
+    this.verify = function (pubkey,message,signature) { //rsa low level
         //message and signature are bigInts
         clear = powMod(signature,pubkey.public_exponent,pubkey.modulus);
         return (this.b2s(clear) == this.b2s(message));
@@ -67,38 +66,33 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
     
     }
 
+
     this.signContainer = function (privkey,container) {
-        var hash = this.hashContainer(container);
+        var hash = this.paddedhashContainer(privkey.getPublicKey(),container);
         return this.sign(privkey,hash);
     }
 
+
     this.verifyContainerSignature = function(pubkey,container,signature) {
-        var orighash = this.hashContainer(container);
+        var orighash = this.paddedhashContainer(pubkey,container);
         return this.verify(pubkey,orighash,signature);
     }
 
-    this.guessKeyLength = function(key) {
-        var l = key.modulus.length;
-        if (l<=21) return 260;
-        else if (l > 22 && l<=50) return 512;
-        else if (100 > l && l > 50) return 1024;
-        else if ( 200 > l && l > 101) return 2048;
-        else if (l >= 200) return 4096;
-        else return 'no idea';
-    }
-
+    
     this.getRandomNumber = function (length) {
         return randBigInt(length,1);    
     }
 
+
     this.blind = function (pubkey,num) {
         var r, blinder, bm, keylength;
-        keylength = this.guessKeyLength(pubkey);
-        r  = this.getRandomNumber(keylength);
+        keylength = this.b2s(pubkey.modulus,2).length;
+        r = this.getRandomNumber(keylength-1);
         blinder = powMod(r,pubkey.public_exponent,pubkey.modulus);
-        bth = multMod(blinder,num,pubkey.modulus);
-        return {'r':r,'blinded_token_hash':bth};
+        blinded_number = multMod(blinder,num,pubkey.modulus);
+        return {'r':r,'blinded_token_hash':blinded_number};
     }
+
 
     this.unblind = function(pubkey,bs,r) {
         var unblinder = inverseMod(r,pubkey.modulus);
@@ -106,6 +100,7 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
     }
 
     this.makeKey = function (length) {
+        //XXX do this with a proper algorithm
         if (length==undefined) length = this.default_key_length;
 
         var e = this.s2b('65537');

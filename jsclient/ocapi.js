@@ -66,7 +66,7 @@ oc.api = function opencoin_api (suite) {
         token.mint_key_id = mk.id;
         token.serial = this.suite.getRandomNumber(128);
         
-        hash = this.suite.hashContainer(token);
+        hash = this.suite.paddedhashContainer(pub,token);
         tmp = this.suite.blind(pub,hash);
         
         blind = new oc.c.Blind();
@@ -184,4 +184,4 @@ oc.api = function opencoin_api (suite) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
- 
+
