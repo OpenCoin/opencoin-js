@@ -76,25 +76,32 @@ server.addMKC(mkc3,private_mintkey3);
 m = alice.requestCDDSerial();
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
+pcontainer('Request CDD Serial',m);
+pcontainer('Rsponse CDD Serial',response);
 
 m = alice.requestCDD(response.cdd_serial);
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
+pcontainer('Request CDD',m);
+pcontainer('Rsponse CDD',response);
 
-console.log('---');
 m = alice.requestMintKeys([mkc.mint_key.id]);
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
+pcontainer('Request Mint Keys (mint key id)',m);
+pcontainer('Rsponse Mint Keys',response);
 
-console.log('denominations');
 m = alice.requestMintKeys(undefined,[1]);
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
+pcontainer('Request Mint Keys (denomination)',m);
+pcontainer('Rsponse Mint Keys',response);
 
-console.log('nothing');
 m = alice.requestMintKeys();
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
+pcontainer('Request Mint Keys (no parameters)',m);
+pcontainer('Rsponse Mint Keys',response);
 
 //trigger request resume
 m = alice.requestValidation('please delay',10);
@@ -105,22 +112,21 @@ alice.dispatch(response.toData());
     console.log('is delayed');    
 }
 tref = m.transaction_reference;
-
-
+pcontainer('Request Validation (delayed)',m);
+pcontainer('Rsponse Minting (delayed)',response);
 
 
 //resume
 m = alice.requestResume(tref);
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
-//console.log(m);
-
+pcontainer('Request Resume',m);
+pcontainer('Rsponse Minting',response);
 
 //trigger validation
 m = alice.requestValidation('testauth',10);
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
-
 
 //setup bob
 m = bob.requestCDD(1);
@@ -134,16 +140,20 @@ bob.dispatch(response.toData());
 
 //send coins
 m = alice.requestSendCoins(5,'payment 1');
+pcontainer('Send Coins',m);
 
 // not using dispatcher, -> bob parses data into the message object
 m2 = bob.requestRenewal(m.coins);
 response2 = server.dispatch(m2.toData());
 bob.dispatch(response2.toData());
+pcontainer('Request Renewal',m2);
+pcontainer('Response Minting',response2);
 
 //bob is cool, can now confirm the coins
 
 response = bob.responseSendCoins(m.toData())
 alice.dispatch(response.toData());
+pcontainer('Received Coins',response);
 
 //alice refreshes, to be on the safe side again
 m = alice.requestRenewal();
@@ -155,6 +165,8 @@ alice.dispatch(response.toData());
 m = bob.requestInvalidation(3,'my account');
 response = server.dispatch(m.toData());
 bob.dispatch(response.toData());
+pcontainer('Request Invalidation',m);
+pcontainer('Response Invalidation',response);
 
 //bob double spends
 try {
@@ -168,5 +180,5 @@ console.log(server.storage);
 console.log(alice.storage);
 console.log(bob.storage);
 //pcontainer('Server Layer storage',server);
-pcontainer('Alice storage',alice);
+//pcontainer('Alice storage',alice);
 

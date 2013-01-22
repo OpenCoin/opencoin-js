@@ -172,11 +172,12 @@ oc.layer = function opencoin_layer(api,storage) {
         var denominations = this.storage.mintkeys.denominations[denomination];
         if (denominations.indexOf(mk.id) == -1) {
             denominations[denominations.length]=mk.id;
-            console.log('added key '+ mk.id);
+            //console.log('added key '+ mk.id);
             if (private_key!=undefined) {
                 this.storage.private_keys[mk.id]=private_key;
             }
-        } else console.log('we already had that key');
+        } 
+        //else console.log('we already had that key');
 
     }
 
