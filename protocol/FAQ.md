@@ -24,3 +24,19 @@ response object to expect for a message. Its a question of the right
 mixture of amount of messages, and number of optional fields.
 
 
+Having field xyz in the protocol would be useful. Why isn't it there?
+---------------------------------------------------------------------
+
+We try to create the protocol with as few fields as possible, but as
+many as necessary. Its tempting to add a field here and there, but
+then we suddenly have information/data bloat. So the idea is to keep
+it simple, and try to find out whats needed (instead of nice).
+
+
+(Implementation) Why is the id in the DSDB not just the serial
+--------------------------------------------------------------
+
+An attacker could otherwise block arbitary serial numbers. Its an 
+expensive attacks (the serials have to be signed to get into the 
+DSDB), but we rather prevent this.
+

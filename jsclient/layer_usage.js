@@ -95,22 +95,30 @@ console.log('nothing');
 m = alice.requestMintKeys();
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
-pcontainer('foo',response);
 
 //trigger request resume
 m = alice.requestValidation('please delay',10);
 response = server.dispatch(m.toData());
-pcontainer('r',response);
 try {
 alice.dispatch(response.toData());
 } catch (e if e=='delayed') {
     console.log('is delayed');    
 }
+tref = m.transaction_reference;
+
+
+
+
+//resume
+m = alice.requestResume(tref);
+response = server.dispatch(m.toData());
+alice.dispatch(response.toData());
+//console.log(m);
+
 
 //trigger validation
 m = alice.requestValidation('testauth',10);
 response = server.dispatch(m.toData());
-pcontainer('r',response);
 alice.dispatch(response.toData());
 
 
@@ -125,9 +133,7 @@ bob.dispatch(response.toData());
 
 
 //send coins
-m = alice.requestSendCoins(3,'payment 1');
-
-
+m = alice.requestSendCoins(5,'payment 1');
 
 // not using dispatcher, -> bob parses data into the message object
 m2 = bob.requestRenewal(m.coins);
@@ -145,10 +151,22 @@ response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
 
 
+//bob invalidates
+m = bob.requestInvalidation(3,'my account');
+response = server.dispatch(m.toData());
+bob.dispatch(response.toData());
+
+//bob double spends
+try {
+    response = server.dispatch(m.toData());
+} catch (e if e=='double spend') {
+    console.log('we have a double spend');    
+}
+
 console.log('---');
 console.log(server.storage);
 console.log(alice.storage);
 console.log(bob.storage);
 //pcontainer('Server Layer storage',server);
-pcontainer('Client Layer storage',alice);
+pcontainer('Alice storage',alice);
 

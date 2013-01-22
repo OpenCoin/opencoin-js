@@ -244,7 +244,7 @@ oc.layer = function opencoin_layer(api,storage) {
     this.sh['response mint keys'] = this.handleResponseMintKeys;
 
 
-    this.requestValidation = function(authinfo,amount) {
+    this.requestValidation = function(authorization_info,amount) {
         var message = this.buildMessage('RequestValidation');
         var cddc = this.getCurrentCDDC();
         var tokens = this.api.tokenize(cddc.cdd.denominations,amount);
@@ -263,7 +263,7 @@ oc.layer = function opencoin_layer(api,storage) {
 
         var tref = this.api.suite.b2s(this.api.suite.getRandomNumber(128));
         message.transaction_reference = tref;
-        message.authorization_info = authinfo;
+        message.authorization_info = authorization_info;
         message.blinds = blinds;
         this.storage.validation[tref]=store;
         this.queueMessage(message);
@@ -271,22 +271,25 @@ oc.layer = function opencoin_layer(api,storage) {
     }
 
     this.responseValidation = function (message) {
-        reply = this.buildReply(message,'ResponseValidation');
+        reply = this.buildReply(message,'ResponseMinting');
         
         var blinds = message.blinds;
         var sum = this.sanitycheckBlinds(blinds);
                 
         //the magic of authorization
         if (!this.authorize(message.authorization_info,sum)) throw 'unauthorized';
-       
+        
+        var blind_signatures = this.batchSignBlinds(blinds);
+
         if (message.authorization_info == 'please delay') {
             reply.status_code = 300;
             reply.status_description = 'come back later';
             var now = new Date();
             var d = new Date(now.getTime() + 10*60000);
             reply.retry_after = d;
+            this.storage.validation[message.transaction_reference] = blind_signatures;
         } else {
-            reply.blind_signatures = this.batchSignBlinds(blinds);
+            reply.blind_signatures = blind_signatures;
         }
         return reply;
     }
@@ -322,13 +325,13 @@ oc.layer = function opencoin_layer(api,storage) {
     }
 
 
-    this.authorize = function (authinfo,amount) {
-        //console.log('Authorize '+amount+ ' with '+authinfo);
+    this.authorize = function (authorization_info,amount) {
+        //console.log('Authorize '+amount+ ' with '+authorization_info);
         return true;
     }
 
 
-    this.handleResponseValidation = function (response) {
+    this.handleResponseMinting = function (response) {
         if (response.status_code == 300) throw 'delayed';
         var bs = response.blind_signatures;
         var bsbyref = {};
@@ -337,7 +340,12 @@ oc.layer = function opencoin_layer(api,storage) {
             bsbyref[s.reference] = s;
         }
         var message = this.mq[response.message_reference];
-        var store = this.storage.validation[message.transaction_reference];
+        
+        var tref = message.transaction_reference
+        if (tref == undefined) throw 'unknown transaction reference';
+        var store = this.storage.validation[tref];
+        if (tref == undefined) throw 'undefined storage';
+        
         var sum = 0;
         for (ref in store) {
             var parts = store[ref];
@@ -348,11 +356,18 @@ oc.layer = function opencoin_layer(api,storage) {
             this.addCoin(coin);
             sum += coin.payload.denomination;
         }
+         
         delete this.storage.validation[message.transaction_reference];
-        delete this.mq[response.message_reference];
+        for (name in this.mq) {
+            var mq_message =  this.mq[name];
+            if (mq_message.transaction_reference == tref) {
+                delete this.mq[name]; 
+            }
+        }    
+        //delete this.mq[response.message_reference];
         return sum;
     } 
-    this.sh['response validation'] = this.handleResponseValidation;
+    this.sh['response minting'] = this.handleResponseMinting;
 
 
     this.addCoin = function(coin) {
@@ -465,7 +480,7 @@ oc.layer = function opencoin_layer(api,storage) {
 
 
    this.responseRenewal = function (message) {
-        reply = this.buildReply(message,'ResponseRenewal');
+        reply = this.buildReply(message,'ResponseMinting');
         
         var blinds = message.blinds;
         var sum = this.sanitycheckBlinds(blinds);
@@ -473,6 +488,7 @@ oc.layer = function opencoin_layer(api,storage) {
         var sum2 = this.api.sumArray(this.sanitycheckCoins(message.coins));
        
         if (sum != sum2) throw 'mismatching amounts';
+        if (this.inDSDB(message.coins)) throw 'double spend';
         this.addCoinsToDSDB(message.coins);
         reply.blind_signatures = this.batchSignBlinds(blinds);
         return reply;
@@ -482,24 +498,26 @@ oc.layer = function opencoin_layer(api,storage) {
 
     this.inDSDB = function (coins) {
         for (var i in coins) {
-            if (coins[i].payload.serial in this.storage.dsdb) return 1;
+            var key = this.makeDSDBKey(coins[i]);
+            if (key in this.storage.dsdb) return 1;
         }
         return 0;
     }
 
+
     this.addCoinsToDSDB = function (coins) {
-        if (this.inDSDB(coins)) throw 'double spend';
         for (var i in coins) {
-            var coin = coins[i];
-            this.storage.dsdb[coin.payload.serial] = coin.signature;
+            var key = this.makeDSDBKey(coins[i]);
+            this.storage.dsdb[key] = 1;//coin.signature;
         }    
     }
 
 
-    this.handleResponseRenewal = function (response) {
-        return this.handleResponseValidation(response);
-    } 
-    this.sh['response renewal'] = this.handleResponseRenewal;
+    this.makeDSDBKey = function (coin) {
+        var data = coin.payload.serial + '_' + coin.signature;    
+        var key = this.api.suite.hash(data);
+        return key;
+    }
 
 
     this.responseSendCoins = function (message) {
@@ -508,14 +526,78 @@ oc.layer = function opencoin_layer(api,storage) {
     }
     this.sh['send coins'] = this.responseSendCoins;
 
+
     this.handleReceivedCoins = function (response) {
         delete this.mq[response.message_reference];
     } 
     this.sh['received coins'] = this.handleReceivedCoins;
 
 
+    this.requestInvalidation = function (amount,authorization_info) {
+        var message = this.buildMessage('RequestInvalidation');
+        message.coins = this.pickCoins(amount);
+        message.authorization_info = authorization_info;
+        this.queueMessage(message);
+        return message;
+    }
+
+    this.responseInvalidation = function (message) {
+        reply = this.buildReply(message,'ResponseInvalidation');
+        var coins = message.coins; 
+        var sum = this.api.sumArray(this.sanitycheckCoins(coins));
+        if (this.inDSDB(coins)) throw 'double spend';
+        this.addCoinsToDSDB(message.coins);
+        this.creditInvalidation(sum,message.authorization_info);
+        return reply;
+    }
+    this.sh['request invalidation'] = this.responseInvalidation;
 
 
+    this.creditInvalidation = function (amount,authorization_info) {
+        return amount;
+    }
+
+
+    this.handleResponseInvalidation = function (response) {
+        delete this.mq[response.message_reference];
+    } 
+    this.sh['response invalidation'] = this.handleResponseInvalidation;
+
+
+    this.requestResume = function (tref) {
+        var message = this.buildMessage('RequestResume');
+        if (!tref in this.storage.validation) throw 'unknown transaction';
+        message.transaction_reference = tref;
+        this.queueMessage(message);
+        return message;
+    }
+   
+
+   this.responseResume = function (message) {
+        reply = this.buildReply(message,'ResponseMinting');
+        var tref = message.transaction_reference;
+        
+        if (!tref in this.storage.validation) throw 'unknown transaction referene';
+        
+        var blind_signatures = this.storage.validation[tref];
+
+        if (blind_signatures == undefined) {
+            reply.status_code = 300;
+            reply.status_description = 'come back later';
+            var now = new Date();
+            var d = new Date(now.getTime() + 10*60000);
+            reply.retry_after = d;
+        } else {
+            reply.blind_signatures = blind_signatures;  
+            //do this maybe later, just in case
+            delete this.storage.validation[tref];
+        }
+        return reply;
+    }
+    this.sh['request resume'] = this.responseResume;
+
+
+    
     this.sumStoredCoins = function() {
         var sum = 0;
         for (d in this.storage.coins) {

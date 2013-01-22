@@ -43,13 +43,6 @@ oc.addContainer('RequestValidation','request validation').prototype.fields = {
     'blinds':                   new oc.f.ContainersField(oc.c.Blind)};
 
 
-oc.addContainer('ResponseValidation','response validation').prototype.fields = {
-    'message_reference' : new oc.f.Field(),
-    'status_code':        new oc.f.Field(),
-    'status_description': new oc.f.Field(),
-    'retry_after':        new oc.f.DateField(),
-    'blind_signatures':   new oc.f.ContainersField(oc.c.BlindSignature)};
-
 
 oc.addContainer('RequestRenewal','request renewal').prototype.fields = {
     'message_reference' :       new oc.f.Field(),
@@ -58,7 +51,12 @@ oc.addContainer('RequestRenewal','request renewal').prototype.fields = {
     'blinds':                   new oc.f.ContainersField(oc.c.Blind)};
 
 
-oc.addContainer('ResponseRenewal','response renewal').prototype.fields = {
+oc.addContainer('RequestResume','request resume').prototype.fields = {
+    'message_reference' :       new oc.f.Field(),
+    'transaction_reference':    new oc.f.Field()};
+
+
+oc.addContainer('ResponseMinting','response minting').prototype.fields = {
     'message_reference' : new oc.f.Field(),
     'status_code':        new oc.f.Field(),
     'status_description': new oc.f.Field(),
@@ -75,12 +73,10 @@ oc.addContainer('RequestInvalidation','request invalidation').prototype.fields =
 oc.addContainer('ResponseInvalidation','response invalidation').prototype.fields = {
     'message_reference' : new oc.f.Field(),
     'status_code':        new oc.f.Field(),
-    'status_description': new oc.f.Field()};
+    'status_description': new oc.f.Field(),
+    'amount':             new oc.f.Field()};
 
 
-oc.addContainer('RequestResume','request resume').prototype.fields = {
-    'message_reference' :       new oc.f.Field(),
-    'transaction_reference':    new oc.f.Field()};
 
 
 oc.addContainer('SendCoins','send coins').prototype.fields = {
