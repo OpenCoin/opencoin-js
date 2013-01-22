@@ -451,7 +451,8 @@ struct: response_invalidation {
     type: 'response invalidation'
     message_reference: integer,
     status_code: integer,
-    status_description: string
+    status_description: string,
+    amount: integer
 }
 
 struct: request_resume {
