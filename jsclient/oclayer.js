@@ -11,6 +11,15 @@ oc.layer = function opencoin_layer(api,storage) {
         return false;
     }
 
+    this.setDefault = function (obj,key,def) {
+        var out = obj[key];
+        if (out == undefined) {
+            obj[key] = def;    
+            out = obj[key];
+        }
+        return out;
+    }
+
 
     this.buildMessage = function(name) {
         var message = new oc.c[name]();
@@ -238,12 +247,12 @@ oc.layer = function opencoin_layer(api,storage) {
     this.requestValidation = function(authinfo,amount) {
         var message = this.buildMessage('RequestValidation');
         var cddc = this.getCurrentCDDC();
-        var payloads = this.api.tokenize(cddc.cdd.denominations,amount);
+        var tokens = this.api.tokenize(cddc.cdd.denominations,amount);
         var store = {};
         var blinds = [];
         //var refbase = this.api.getRandomInt(100000,999999);
-        for (var i in payloads) {
-            var t = payloads[i];
+        for (var i in tokens) {
+            var t = tokens[i];
             var mkc = this.getCurrentMKC(t);
             var ref = 'r_'+i;
             var parts = this.api.makeBlind(cddc,mkc,ref);
@@ -269,9 +278,16 @@ oc.layer = function opencoin_layer(api,storage) {
                 
         //the magic of authorization
         if (!this.authorize(message.authorization_info,sum)) throw 'unauthorized';
-        
-        //this could be delayed
-        reply.blind_signatures = this.batchSignBlinds(blinds);
+       
+        if (message.authorization_info == 'please delay') {
+            reply.status_code = 300;
+            reply.status_description = 'come back later';
+            var now = new Date();
+            var d = new Date(now.getTime() + 10*60000);
+            reply.retry_after = d;
+        } else {
+            reply.blind_signatures = this.batchSignBlinds(blinds);
+        }
         return reply;
     }
     this.sh['request validation'] = this.responseValidation;
@@ -313,6 +329,7 @@ oc.layer = function opencoin_layer(api,storage) {
 
 
     this.handleResponseValidation = function (response) {
+        if (response.status_code == 300) throw 'delayed';
         var bs = response.blind_signatures;
         var bsbyref = {};
         for (var i in bs) {
@@ -344,15 +361,175 @@ oc.layer = function opencoin_layer(api,storage) {
     }
 
 
-    this.setDefault = function (obj,key,def) {
-        var out = obj[key];
-        if (out == undefined) {
-            obj[key] = def;    
-            out = obj[key];
+    this.requestSendCoins = function (amount,subject) {
+        var message = this.buildMessage('SendCoins');
+        var available = this.sumStoredCoins();
+        if (amount>available) throw 'we only have '+available;
+        message.coins = this.pickCoins(amount);
+        message.subject = subject;
+        this.queueMessage(message);
+        return message;
+    }
+   
+   
+   this.pickCoins = function (amount) {
+        var sum = 0;
+        var selected = [];
+        var denominations = Object.keys(this.storage.coins);
+        denominations.sort(this.api.compI);
+        var i = denominations.length-1;
+        var d;
+        while (sum<amount) {
+            if (i<0) throw 'non existent denomination';
+            d = parseInt(denominations[i]);
+            if (d>amount-sum) {
+                i --;
+            } else if(this.storage.coins[d].length>0) {
+                selected.push(this.storage.coins[d].shift());    
+                sum += d;
+            } else if(i>0) {
+                i--;    
+            } else {
+                throw 'run out of coins'    
+            }
+        }
+        return selected;
+    }
+
+ 
+
+    this.sanitycheckCoins = function(coins) {
+        var cddc = this.getCurrentCDDC();
+        var cid = this.api.getKeyId(cddc.cdd.issuer_public_master_key);
+        var sum = 0;
+        var out = [];
+        for (var i in coins) {
+            var coin = coins[i];
+            var payload = coin.payload;
+            if (payload.issuer_id!=cid) throw 'wrong issuer';
+            var mkc = this.storage.mintkeys[payload.mint_key_id];
+            if (mkc == undefined) throw 'unknown mint key';
+            if (mkc.mint_key.id != payload.mint_key_id) throw 'wrong mint id';
+            var verified = this.api.suite.verifyContainerSignature(mkc.mint_key.public_mint_key,coin.payload,coin.signature);
+            if (!verified) throw 'invalid coin signature';            
+            sum += mkc.mint_key.denomination;
+            out.push(mkc.mint_key.denomination);
         }
         return out;
     }
 
+
+    this.requestRenewal = function (newcoins) {
+        var message = this.buildMessage('RequestRenewal');
+        var cddc = this.getCurrentCDDC();
+        var existing = [];
+        
+        for (d in this.storage.coins) {
+            for (i = 0; i<this.storage.coins[d].length; i++) {
+                existing.push(parseInt(d));
+            }    
+        }
+        
+        if (newcoins == undefined) newcoins = [];
+        else this.sanitycheckCoins(newcoins);
+
+        var newd = [];
+        for (var i in newcoins) {
+            newd.push(newcoins[i].payload.denomination);
+        }
+        var tmp = this.api.prepare_for_exchange(cddc.cdd.denominations,existing,newd);
+        var blinds = [];
+        var store = {};
+        for (var i in tmp.makenew) {
+            var t = tmp.makenew[i];
+            var mkc = this.getCurrentMKC(t);
+            var ref = 'r_'+i;
+            var parts = this.api.makeBlind(cddc,mkc,ref);
+            parts.r = this.api.suite.b2s(parts.r);
+            store[ref] = parts;
+            blinds[blinds.length] = parts.blind;
+        }
+
+        var to_send = [];
+        for (var i in tmp.fromold) to_send.push(this.storage.coins[tmp.fromold[i]].shift());
+        for (var i in newcoins) to_send.push(newcoins[i]);
+
+        var tref = this.api.suite.b2s(this.api.suite.getRandomNumber(128));
+        message.transaction_reference = tref;
+        message.coins = to_send;
+        message.blinds = blinds;
+        this.storage.validation[tref]=store;
+        this.queueMessage(message);
+        return message;
+    }
+
+
+   this.responseRenewal = function (message) {
+        reply = this.buildReply(message,'ResponseRenewal');
+        
+        var blinds = message.blinds;
+        var sum = this.sanitycheckBlinds(blinds);
+ 
+        var sum2 = this.api.sumArray(this.sanitycheckCoins(message.coins));
+       
+        if (sum != sum2) throw 'mismatching amounts';
+        this.addCoinsToDSDB(message.coins);
+        reply.blind_signatures = this.batchSignBlinds(blinds);
+        return reply;
+    }
+    this.sh['request renewal'] = this.responseRenewal;
+
+
+    this.inDSDB = function (coins) {
+        for (var i in coins) {
+            if (coins[i].payload.serial in this.storage.dsdb) return 1;
+        }
+        return 0;
+    }
+
+    this.addCoinsToDSDB = function (coins) {
+        if (this.inDSDB(coins)) throw 'double spend';
+        for (var i in coins) {
+            var coin = coins[i];
+            this.storage.dsdb[coin.payload.serial] = coin.signature;
+        }    
+    }
+
+
+    this.handleResponseRenewal = function (response) {
+        return this.handleResponseValidation(response);
+    } 
+    this.sh['response renewal'] = this.handleResponseRenewal;
+
+
+    this.responseSendCoins = function (message) {
+        var reply = this.buildReply(message,'ReceivedCoins');
+        return reply;
+    }
+    this.sh['send coins'] = this.responseSendCoins;
+
+    this.handleReceivedCoins = function (response) {
+        delete this.mq[response.message_reference];
+    } 
+    this.sh['received coins'] = this.handleReceivedCoins;
+
+
+
+
+    this.sumStoredCoins = function() {
+        var sum = 0;
+        for (d in this.storage.coins) {
+            sum += d*this.storage.coins[d].length;    
+        }
+        return sum;
+    }
+
+    this.sumCoins = function(coinarray) {
+        var sum = 0;
+        for (var i in coinarray) sum += coinarray[i].payload.denomination;
+        return sum;
+    }
+   
 
 
 }

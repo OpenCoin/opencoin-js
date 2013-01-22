@@ -177,7 +177,10 @@ oc.api = function opencoin_api (suite) {
                 makenew[makenew.length] = t;    
             }
         }
-        return [keepold,oldcoins,makenew];
+        out = {'keepold':keepold,
+               'fromold':oldcoins,
+               'makenew':makenew}
+        return out;
     }
 
     this.getRandomInt = function get (min, max) {

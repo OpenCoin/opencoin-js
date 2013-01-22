@@ -1,7 +1,7 @@
 oc.crypto = {};
 oc.crypto.rsa_sha256_chaum86 = new function() {
     this.identifier = 'RSA-SHA512-CHAUM86';
-    this.default_key_length = 260; //in real life 1024,2048 or 4096
+    this.default_key_length = 512; //in real life 1024,2048 or 4096
 
     this.s2b = function (text,base) {
         if (base==undefined) base = 16;

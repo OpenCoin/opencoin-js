@@ -1,3 +1,5 @@
+/////////////////some preperation first
+
 suite = oc.crypto.rsa_sha256_chaum86;
 api = new oc.api(suite);
 issuer_private = suite.makeKey();
@@ -16,6 +18,7 @@ function newStorage() {
 
 
 var server = new oc.layer(api,newStorage());
+server.storage.dsdb = {};
 var alice = new oc.layer(api,newStorage());
 var bob = new oc.layer(api,newStorage());
 
@@ -69,7 +72,7 @@ mkc3 = mkout3.mkc;
 private_mintkey3 = mkout3.private_mintkey;
 server.addMKC(mkc3,private_mintkey3);
 
-
+////////////////////////////// The real fun ////////////////////////////
 m = alice.requestCDDSerial();
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
@@ -94,11 +97,52 @@ response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
 pcontainer('foo',response);
 
+//trigger request resume
+m = alice.requestValidation('please delay',10);
+response = server.dispatch(m.toData());
+pcontainer('r',response);
+try {
+alice.dispatch(response.toData());
+} catch (e if e=='delayed') {
+    console.log('is delayed');    
+}
+
+//trigger validation
 m = alice.requestValidation('testauth',10);
 response = server.dispatch(m.toData());
 pcontainer('r',response);
 alice.dispatch(response.toData());
 
+
+//setup bob
+m = bob.requestCDD(1);
+response = server.dispatch(m.toData());
+bob.dispatch(response.toData());
+
+m = bob.requestMintKeys();
+response = server.dispatch(m.toData());
+bob.dispatch(response.toData());
+
+
+//send coins
+m = alice.requestSendCoins(3,'payment 1');
+
+
+
+// not using dispatcher, -> bob parses data into the message object
+m2 = bob.requestRenewal(m.coins);
+response2 = server.dispatch(m2.toData());
+bob.dispatch(response2.toData());
+
+//bob is cool, can now confirm the coins
+
+response = bob.responseSendCoins(m.toData())
+alice.dispatch(response.toData());
+
+//alice refreshes, to be on the safe side again
+m = alice.requestRenewal();
+response = server.dispatch(m.toData());
+alice.dispatch(response.toData());
 
 
 console.log('---');
