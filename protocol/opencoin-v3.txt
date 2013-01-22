@@ -412,15 +412,6 @@ struct: request_validation {
     blinds: [n blinds]
 }
 
-struct: response_validation {
-    type: 'response validation',
-    message_reference: integer,
-    status_code: integer,
-    status_description: string,
-    retry_after: DATETIME, [[not empty if status is 3XX / timestamp 
-                             instead of for asynchronous communication]]
-    blind_signatures: [blind_signature,...] [[not empty if status 2XX]]
-}
 
 struct: request_renewal {
     type: 'request renewal',
@@ -430,8 +421,8 @@ struct: request_renewal {
     blinds: [n blinds]
 }
 
-struct: response_renewal {
-    type: 'response renewal',
+struct: response_minting {
+    type: 'response minting',
     message_reference: integer,
     status_code: integer,
     status_description: string,
@@ -439,6 +430,13 @@ struct: response_renewal {
                             of for asynchronous communication]]
     blind_signatures: [blind_signature,...] [[not empty if status 2XX]]
 }
+
+struct: request_resume {
+    type: 'request resume',
+    message_reference: integer,
+    transaction_reference: crypto_random_number
+}
+
 
 struct: request_invalidation {
     type: 'request invalidation',
@@ -454,11 +452,6 @@ struct: response_invalidation {
     status_description: string
 }
 
-struct: request_resume {
-    type: 'request resume',
-    message_reference: integer,
-    transaction_reference: crypto_random_number
-}
 
 struct: send_coins {
     type: 'send coins',
