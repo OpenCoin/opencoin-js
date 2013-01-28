@@ -1,0 +1,37 @@
+<html>
+<head>
+</head>
+<body>
+<h1>opencoin example json entities</h1>
+<span id='content'></span>
+<script>
+function output(html) {
+    var content = document.getElementById('content');
+    content.insertAdjacentHTML('beforeend',html);
+}
+
+function pcontainer(name,container,dobencode) {
+    output('<h2>'+name+'</h3>');
+    output('<h3>json</h3>');
+    output('<pre>'+container.toJson()+'</pre>');
+    if (dobencode!=undefined) {
+        output('<h3>bencoded (for signature)<h3>');
+        output(container.toBencode());
+    }
+    output('<hr>');   
+}
+output(new Date());
+</script>
+
+    <script src='jsclient/containerbase.js' ></script>
+    <script src='jsclient/container.js' ></script>
+    <script src='jsclient/messages.js' ></script>
+    <script src='jsclient/BigInt.js' ></script>
+    <script src='jsclient/sha256.js' ></script>
+    <script src='jsclient/occrypto.js' ></script>
+    <script src='jsclient/ocapi.js' ></script>
+    <script src='jsclient/oclayer.js'></script>
+    <script src='jquery.min.js'></script>
+    <script src='client.js'></script>
+</body>
+</html>
