@@ -29,7 +29,9 @@ oc.api = function opencoin_api (suite) {
         //here we would actually genereate a mintkey
         //var mint_privkey = new oc.c.RSAPrivateKey();
         //mint_privkey.fromData(this.dummy_keydata);
-        var mint_privkey = this.makeKey();
+        var keylength =this.suite.b2s(issuer_privkey.getPublicKey().modulus,2).length;
+        keylength += (keylength % 2) //add one if its odd, because it will be too small;
+        var mint_privkey = this.makeKey(keylength);
         mk.public_mint_key = mint_privkey.getPublicKey();
         mk.id = this.suite.hash(mk.public_mint_key.toBencode());
         mk.issuer_id = this.getKeyId(issuer_privkey.getPublicKey());

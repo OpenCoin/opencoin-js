@@ -44,16 +44,24 @@ oc.layer = function opencoin_layer(api,storage) {
         this.mq.next_id = id+1;
     }
 
-
-    this.dispatch = function(data) {
+    this.parseData = function(data) {
         var type = data.type;
         if (!(type in oc.registry)) throw 'non existent type';
-        obj = new oc.registry[type]();
-        obj.fromData(data);
-        handler = this.sh[obj.type];
+        message = new oc.registry[type]();
+        message.fromData(data);
+        return message;
+    }
+
+    this.callHandler = function(message) {
+        var handler = this.sh[message.type];
         if (handler == undefined) throw 'non existent handler for "'+obj.type+'"';
-        out = handler.call(this,obj);
-        return out;
+        var out = handler.call(this,message);
+        return out; 
+    }
+
+    this.dispatch = function(data) {
+        var message = this.parseData(data);
+        return this.callHandler(message);
     }
 
     this.serializeStorage = function() {
@@ -509,13 +517,17 @@ oc.layer = function opencoin_layer(api,storage) {
     this.addCoinsToDSDB = function (coins) {
         for (var i in coins) {
             var key = this.makeDSDBKey(coins[i]);
+            console.log('add to dsdb: '+key);
             this.storage.dsdb[key] = 1;//coin.signature;
         }    
     }
 
 
     this.makeDSDBKey = function (coin) {
-        var data = coin.payload.serial + '_' + coin.signature;    
+        var key =  this.api.suite.b2s(coin.payload.serial,16);
+        return key;
+        //var data = coin.payload.serial + '_' + coin.signature;    
+        //var data = coin.payload.serial + '_' + coin.signature;    
         var key = this.api.suite.hash(data);
         return key;
     }

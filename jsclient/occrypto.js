@@ -99,6 +99,7 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
     }
 
     this.makeKey = function (length) {
+        console.log('keylength: '+length);
         //XXX do this with a proper algorithm
         if (length==undefined) length = this.default_key_length;
 
