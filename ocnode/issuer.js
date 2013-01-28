@@ -83,18 +83,20 @@ http.createServer(
         var body = "" ;
         
         response.statusCode=200;
-        response.setHeader('Content-Type','text/plain');
         response.setHeader("Access-Control-Allow-Origin", "*");
         
 
         if (request.method === "POST"){
-
+            response.setHeader('Content-Type','text/plain');
             request.on('data', function( chunk ) {
                 // append the chunk to the growing message body
                 body += chunk ;
             }) ;
 
             request.on('end', function(){
+                if (request.url=='/webform') {
+                    body = body.slice(8);
+                };
                 try {
                     mdata = JSON.parse(body);
                     res = server.dispatch(mdata);
@@ -108,7 +110,15 @@ http.createServer(
             }) ;
         } else {
             request.on('end',function() {
-                response.write('Welcome to the opencoin issuer.');
+                response.setHeader('Content-Type','text/html');
+                response.write('<html><head></head><body><h1>Welcome to the opencoin issuer.</h1>');
+                response.write('<form action="/webform" method="POST" enctype="text/plain">');
+                response.write('<div>Please paste your opencoin json message</div>');
+                response.write('<input type="submit"><br/>');
+                response.write('<textarea name="message" cols="120" rows="30"></textarea><br/>');
+                response.write('<input type="submit">');
+                response.write('</form>');
+                response.write('</body></html>');
                 response.end();
             
             });    
