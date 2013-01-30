@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html> 
+	<head> 
+	<title>opencoin</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script>
+        $(document).bind("mobileinit", function(){
+        $.mobile.defaultPageTransition='none';
+        $.mobile.defaultDialogTransition='none';
+        });
+        $.ready(function() {
+            window.addEventListener("load",function() {
+              setTimeout(function(){
+                window.scrollTo(0, 1);
+                }, 0);
+            });
+        });
+    </script>
+	<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+</head> 
+<body data-theme="b"> 
+
+
+<div data-role="page" id="currencylist"  data-theme='b' xdata-add-back-btn="true">
+	<div data-role="header" data-position="fixed">
+		<h1>currencies</h1>
+	</div>
+
+    <div data-role="content">
+        <ul data-role='listview' data-inset='true'>
+            <li><a href='#currency'><h3>
+                Greenbucks</h3>
+                <p> 217.03 greens</p>
+                </a></li>
+            <li><a href='#currency'><h3>JanGulden</h3>
+                <p> 91.07 Gulden</p>
+                </a></li>
+        </ul>
+    </div>
+
+    <div data-role="footer" class='ui-bar' data-position="fixed">   
+        <a href='' data-role='button' data-icon='plus'>add currency</a>
+    </div>
+</div>
+
+
+
+<div data-role="page" id="currency"  data-add-back-btn="true" data-theme='b'>
+    <div data-role="header" data-position="fixed">
+        <a href="#currencylist" data-icon="home" data-iconpos="notext">Home</a>
+		<h1>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+        <div><strong>http://greenbucks.org/issuer/</strong><br>
+        You have 217.03 greens</div> 
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#withdraw">Withdraw</a></li>
+            <li><a href="#send">Send</a></li>
+            <li><a href="#receive">Receive</a></li>
+            <li><a href="#info" data-rel='dialog'>Get change</a></li>
+            <li><a href="#deposit">Deposit</a></li>
+        </ul>
+    </div>
+	
+    <div data-role="footer" xclass="ui-bar" data-position="fixed">
+        <!--<a href="#cdds" data-role="button" data-icon="info">cdds</a>
+        <a href="#mkcs" data-role="button" data-icon="info">mkcs</a>
+        <a href="#coins" data-role="button" data-icon="info">coins</a>
+        <a href="#settings" data-role="button" data-icon="grid">more</a>-->
+        <a href="#more" data-role="button" data-icon="grid" style="float:right">more</a>
+	</div>
+</div>
+
+
+<div data-role="page" id="withdraw" data-theme="b" data-add-back-btn="true">
+
+	<div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1>Greenbucks</h1>
+	</div>
+	<div data-role="content">
+    Enter the amount you want to withdraw, and the subject as required by the issuer.
+        <div data-role='fieldcontain'>
+            <label for="amount">Amount</label>
+            <input type="text" name="amount" id="amount" value="" type='number' />
+        </div>
+        <div data-role='fieldcontain'>
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" id="subject" value="" />
+        </div>
+		<a href="#info" data-rel='dialog' data-role="button">withdraw</a>
+	</div>
+</div>
+
+<div data-role="page" id="send" data-theme="b">
+	<div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+      <form>
+        Enter the amount you want to send, and an optional subject.
+        <div data-role='fieldcontain'>
+            <label for="amount">Amount</label>
+            <input type="text" name="amount" id="amount" value="" type='number'/>
+        </div>
+        <div data-role='fieldcontain'>
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" id="subject" value="" />
+        </div>
+		<a href="#sendresult" xdata-rel='dialog' data-role="button">send</a>
+        </form>
+	</div>
+</div>
+
+
+<div data-role="page" id="sendresult" data-theme="b">
+	<div data-role="header" data-position="fixed">
+		<h1>Send message</h1>
+	</div>
+
+	<div data-role="content">
+        Send message created. Please transfer this to the recipient
+        <textarea name="message" id="message" data-role="none" rows='10' style='width:100%'>
+        {
+    "message_reference": 7,
+    "subject": "payment 1",
+    "coins": [
+        {
+            "payload": {
+                "protocol_version": "http://opencoin.org/1.0",
+                "issuer_id": "5fc006a33cebbace1699030b55091199965ee2bf0c5446a14786bba115069c56",
+                "cdd_location": "http://opencent.org",
+                "denomination": 5,
+                "mint_key_id": "be9a81eb50ef00eb818526653b71332333555dbf123d2e21370d350783b58759",
+                "serial": "8d4fd4586499cb47a24480739d6db1d2",
+                "type": "payload"
+            },
+            "signature": "74232dfa5a111dab0bab3f6f6a9bcf7b5438f959f824c6f2d15e3be6154ebeca66934382ae9e7e94673e9653df911033a351d1796b467267b66e9d5936424854",
+            "type": "coin"
+        }
+    ],
+    "type": "send coins"
+}
+        </textarea>
+            <a href="mailto:?subject=Some greens for you&body=%20%7B%0A%20%20%20%20%22message_reference%22%3A%207%2C%0A%20%20%20%20%22subject%22%3A%20%22payment%201%22%2C%0A%20%20%20%20%22coins%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%22payload%22%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22protocol_version%22%3A%20%22http%3A//opencoin.org/1.0%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22issuer_id%22%3A%20%225fc006a33cebbace1699030b55091199965ee2bf0c5446a14786bba115069c56%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22cdd_location%22%3A%20%22http%3A//opencent.org%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22denomination%22%3A%205%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22mint_key_id%22%3A%20%22be9a81eb50ef00eb818526653b71332333555dbf123d2e21370d350783b58759%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22serial%22%3A%20%228d4fd4586499cb47a24480739d6db1d2%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22type%22%3A%20%22payload%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22signature%22%3A%20%2274232dfa5a111dab0bab3f6f6a9bcf7b5438f959f824c6f2d15e3be6154ebeca66934382ae9e7e94673e9653df911033a351d1796b467267b66e9d5936424854%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22type%22%3A%20%22coin%22%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22type%22%3A%20%22send%20coins%22%0A%7D%0A" data-role='button' data-inline='true'>email</a>
+        <a href='' data-role='button' data-inline='true'>copy</a>
+        <a href='#currency' data-role='button' data-icon='check' data-inline='true'>done</a>
+	</div>
+</div>
+
+
+<div data-role="page" id="receive" data-theme="b">
+	<div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+        Enter the message you received.
+        <textarea name="message" id="message" data-role="none" rows='10' style='width:100%'>
+        </textarea>
+        <a href='#info' data-rel='dialog' data-role='button'>receive</a>
+	</div>
+</div>
+
+
+<div data-role="page" id="deposit" data-theme="b">
+	<div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+      <form>
+        Enter the amount you want to deposit, and an optional subject.
+        <div data-role='fieldcontain'>
+            <label for="amount">Amount</label>
+            <input type="text" name="amount" id="amount" value="" type='number'/>
+        </div>
+        <div data-role='fieldcontain'>
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" id="subject" value="" />
+        </div>
+		<a  href="#info" data-rel='dialog' data-role="button">deposit</a>
+        </form>
+	</div>
+</div>
+
+
+<div data-role="page" id="info" data-theme='b'>
+	<div data-role="header" data-position="fixed">
+		<h1>action happening</h1>
+	</div>
+
+	<div data-role="content">
+		something is going on...
+		<a href="#currency" data-role="button">Ok</a>
+	</div>
+</div>
+
+<div data-role="page" id="more"  data-add-back-btn="true" data-theme='b'>
+    <div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+        <div><strong>advanced actions</strong><br>
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#coins" data-icon='info'>coins</a></li>
+            <li><a href="#cddcs" data-icon='info'>currency descriptions</a></li>
+            <li><a href="#mkcs" data-icon='info'>mint key certificates</a></li>
+            <li><a href="#messages" data-icon='info'>pending messages</a></li>
+            <li><a href="#deletecurrency" data-icon='info'>delete currency</a></li>
+        </ul>
+    </div>
+</div>
+
+
+</body>
+</html>
