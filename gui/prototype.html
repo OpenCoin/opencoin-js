@@ -32,10 +32,10 @@
         <ul data-role='listview' data-inset='true'>
             <li><a href='#currency'><h3>
                 Greenbucks</h3>
-                <p> 217.03 greens</p>
+                <p>You have <strong>217.03</strong></p>
                 </a></li>
             <li><a href='#currency'><h3>JanGulden</h3>
-                <p> 91.07 Gulden</p>
+                <p>You have <strong>91.07</strong></p>
                 </a></li>
         </ul>
     </div>
@@ -54,17 +54,18 @@
 	<div data-role="content">
 
       <form>
-      Enter url and at least the first 10 characters of the currency id. Please make sure that you got both
+      Enter at least the first 10 characters of the currency id, and the url. Please make sure that you got both
       from a secure source.
-
-        <div data-role='fieldcontain'>
-            <label for="amount">url</label>
-            <input name="amount" id="amount" value="" type='url'/>
-        </div>
+        
         <div data-role='fieldcontain'>
             <label for="subject">Currency id</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
+        <div data-role='fieldcontain'>
+            <label for="amount">url</label>
+            <input name="amount" id="amount" value="" type='url'/>
+        </div>
+        
 		<a  href="#addingcurrency" data-rel='dialog' data-role="button">Add currency</a>
         </form>
 	</div>
@@ -95,14 +96,16 @@
 	</div>
 
 	<div data-role="content">
-        <div>You have <strong>217.03</strong> Greenbucks<br>
-            <em>http://greenbucks.org/issuer/</em>
-        </div> 
+        <h3>You have 217.03 Greenbucks</h3>
+        
+        <div>currency id: abcdef12341234efab</div> 
         <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#withdraw">Withdraw</a></li>
             <li><a href="#send">Send</a></li>
             <li><a href="#receive">Receive</a></li>
             <li><a href="#info" data-rel='dialog'>Get change</a></li>
+        </ul>
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#withdraw">Withdraw</a></li>
             <li><a href="#deposit">Deposit</a></li>
         </ul>
     </div>
@@ -254,6 +257,9 @@
             <li><a href="#cddcs" data-icon='info'>Currency descriptions</a></li>
             <li><a href="#mkcs" data-icon='info'>Mint key certificates</a></li>
             <li><a href="#messages" data-icon='info'>Pending messages</a></li>
+        </ul>
+        
+        <ul data-role="listview" data-inset="true" data-filter="false">
             <li><a href="#deletecurrency" data-icon='info'>Delete currency</a></li>
         </ul>
     </div>
