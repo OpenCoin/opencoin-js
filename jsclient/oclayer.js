@@ -85,19 +85,58 @@ oc.layer = function opencoin_layer(api,storage) {
                 return tmp;
             }
         }
-
         var out = {};
         for (name in this.storage) {
             out[name] = innerToData(this.storage[name],undefined,this.storage);
         }
-
         return out;
- 
     }
 
     this.toJson = function() {
         return JSON.stringify(this.serializeStorage(),null,4);    
     }
+
+    this.fromJson = function(json) {
+        this.storage = this.deserializeStorage(JSON.parse(json));    
+        return this.storage;
+    }
+
+    this.deserializeStorage = function(data) {
+
+        function innerFromData(value,ignored,master) {
+            var type = typeof(value);
+            if (['string','number'].indexOf(type)!=-1) {
+                return value;    
+            } else if (Array.isArray(value)) {
+                var tmp = [];
+                for (var i in value) {
+                    tmp[i] = innerFromData(value[i],ignored,master);    
+                }
+                return tmp;
+            } else if (value.type != undefined) {//must be an container
+                var klass = oc.registry[value.type];
+                container = new klass();
+                container.fromData(value,master);
+                return container;
+            } else {
+                var tmp = {};
+                for (var name in value) {
+                    tmp[name] = innerFromData(value[name],ignored,master);    
+                }
+                return tmp;
+            }
+        }
+
+        var out = {};
+        for (name in data) {
+            out[name] = innerFromData(data[name],undefined,data);
+        }
+        return out;
+
+    }
+
+
+
 
     //////////////////// CDDC /////////////////////////////////////
 
