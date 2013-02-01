@@ -2,7 +2,7 @@
 
 suite = oc.crypto.rsa_sha256_chaum86;
 api = new oc.api(suite);
-issuer_private = suite.makeKey();
+issuer_private = suite.makeKey(260);
 issuer_public = issuer_private.getPublicKey();
 
 function newStorage() {
