@@ -3,15 +3,27 @@
 	<head> 
 	<title>opencoin</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
-	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
-	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+	<link rel="stylesheet" href="jquery.mobile-1.2.0.min.css" />
+
+	<script src="jquery-1.8.2.min.js"></script>
     <script>
         $(document).bind("mobileinit", function(){
             $.mobile.defaultPageTransition='none';
             $.mobile.defaultDialogTransition='none';
         });
     </script>
-	<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+	<script src="jquery.mobile-1.2.0.min.js"></script>
+    <script src='jsclient/containerbase.js' ></script>
+    <script src='jsclient/container.js' ></script>
+    <script src='jsclient/messages.js' ></script>
+    <script src='jsclient/BigInt.js' ></script>
+    <script src='jsclient/sha256.js' ></script>
+    <script src='jsclient/occrypto.js' ></script>
+    <script src='jsclient/ocapi.js' ></script>
+    <script src='jsclient/oclayer.js'></script>
+    <script src='ocgui.js'></script>
+
         <style type='text/css'>
        /* @media only screen and (min-width: 500px){
             .ui-page, .ui-header, .ui-footer, ui-dialog {
@@ -29,7 +41,7 @@
 	</div>
 
     <div data-role="content">
-        <ul data-role='listview' data-inset='true'>
+        <ul data-role='listview' data-inset='true' id='currencylist'>
             <li><a href='#currency'><h3>
                 Greenbucks</h3>
                 <p>You have <strong>217.03</strong></p>
@@ -52,26 +64,27 @@
 	</div>
 
 	<div data-role="content">
-
-      <form>
-      Enter at least the first 10 characters of the currency id, and the url. Please make sure that you got both
-      from a secure source.
         
-        <div data-role='fieldcontain'>
-            <label for="subject">Currency id</label>
-            <input type="text" name="subject" id="subject" value="" />
-        </div>
-        <div data-role='fieldcontain'>
-            <label for="amount">url</label>
-            <input name="amount" id="amount" value="" type='url'/>
-        </div>
+        <form>
+            Enter at least the first 10 characters of the currency id, 
+            and the url. Please make sure that you got both from a secure
+            source.
         
-		<a  href="#addingcurrency" data-rel='dialog' data-role="button">Add currency</a>
+            <div data-role='fieldcontain'>
+                <label for="currencyid">Currency id</label>
+                <input type="text" name="currencyid" id="currencyid" value="" />
+            </div>
+            <div data-role='fieldcontain'>
+                <label for="url">url</label>
+                <input name="url" id="url" value="" type='url'/>
+            </div>
+            
+            <input id='do-addcurrency'  type='submit' value='Add currency'/>
         </form>
 	</div>
 </div>
 
-<div data-role="page" id="addingcurrency" data-theme='b'>
+<div data-role="dialog" id="addingcurrency" data-theme='b'>
 	<div data-role="header" data-position="fixed">
 		<h1>Adding currency</h1>
 	</div>
@@ -80,13 +93,13 @@
         <h1>Please validate the id</h1>
         <form>
 		The currency is we downloaded got is the following. <br/><strong>Please verify that it is correct!</strong> 
-        <textarea>
+        <textarea id='cidarea'>
         82abccea8c82981adce47a9ddbfb1f43317b29ffe1393445317de0c455e9e028
         </textarea>
         Please make sure that this is the <strong>exact</strong> id that you wanted to add.
         </form>
-		<a href="#currency" data-role="button" data-icon='check'>Yes, it is correct</a>
-        <a href="#currencies" data-role="button" data-theme='c' data-icon='alert'>No, I want to cancel</a>
+		<a href="#currencies" data-role="button" class='confirm' data-icon='check'>Yes, it is correct</a>
+        <a href="#addcurrency" data-role="button" class='cancel' data-theme='c' data-icon='alert'>No, I want to cancel</a>
 	</div>
 </div>
 <div data-role="page" id="currency"  data-add-back-btn="true" data-theme='b'>
@@ -104,6 +117,7 @@
             <li><a href="#receive">Receive</a></li>
             <li><a href="#info" data-rel='dialog'>Get change</a></li>
         </ul>
+        
         <ul data-role="listview" data-inset="true" data-filter="false">
             <li><a href="#withdraw">Withdraw</a></li>
             <li><a href="#deposit">Deposit</a></li>
@@ -241,6 +255,18 @@
 	<div data-role="content">
 		something is going on...
 		<a href="#currency" data-role="button">Ok</a>
+	</div>
+</div>
+
+<div data-role="dialog" id="error" data-theme='b'>
+	<div data-role="header" data-position="fixed">
+		<h1>ERROR</h1>
+	</div>
+
+	<div data-role="content">
+		We have the following problem:
+        <blockquote id='errormessage'>errormessage</blockquote>
+		<a href="back" data-role="button" data-rel='back'>Ok</a>
 	</div>
 </div>
 

@@ -43,17 +43,16 @@ function setupServer() {
     issuer_public = issuer_private.getPublicKey();
     server.storage.dsdb = {};
     params = {};
-    params.cdd_location = 'http://opencent.org';
+    params.cdd_location = 'http://localhost:6789/';
     params.cdd_serial = 1;
     params.cdd_signing_date = new Date("2012-12-30T11:46:00");
     params.cdd_expiry_date = new Date("2014-12-31T23:59:59");
-    params.currency_name = 'OpenCent';
+    params.currency_name = 'TestTaler';
     params.currency_divisor = 100;
-    params.validation_service = [[10,'http://opencent.org'],
-                                 [20,'http://opencent.com/validate']];
-    params.info_service =  [[10,'http://opencent.org']];
-    params.renewal_service =  [[10,'http://opencent.org']];
-    params.invalidation_service =  [[10,'http://opencent.org']];
+    params.validation_service = [[10,'http://localhost:6789']];
+    params.info_service =  [[10,'http://localhost:6789']];
+    params.renewal_service =  [[10,'http://localhost:6789']];
+    params.invalidation_service =  [[10,'http://localhost:6789']];
     params.denominations=[1,2,5];
     params.additional_info='';
 
@@ -122,9 +121,8 @@ function startServer() {
                         var mdata = JSON.parse(body);
                         var res = server.dispatch(mdata);
                         var type = res.type;
-                        console.log(res.type);
                         if (type!=undefined && ['response minting','response invalidation'].indexOf(type)!=-1) {
-                            console.log('store server data');
+                            console.log('write server data');
                             fs.writeFile('serverdata.json',server.toJson(),'utf-8');
                         }
                         response.write(res.toJson());

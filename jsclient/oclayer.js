@@ -1,8 +1,13 @@
 oc.layer = function opencoin_layer(api,storage) {
+    this.setActiveStorage = function(storage) {
+        this.storage = storage;
+        this.mq = storage.message_queue;
+    }
+    if (storage!=undefined) this.setActiveStorage(storage);
     this.api = api;
-    this.storage = storage;
-    this.mq = storage.message_queue;
     this.sh = {} //server handler functions;
+
+
 
     this.isEmpty = function(a) {
         if (a == undefined) return true;
@@ -19,6 +24,18 @@ oc.layer = function opencoin_layer(api,storage) {
         }
         return out;
     }
+
+    this.newStorage = function newStorage() {
+        return {
+            'message_queue':{'next_id':0},
+            'cddcs':{},
+            'mintkeys':{'denominations':{}},
+            'validation':{},
+            'private_keys':{},
+            'coins':{},
+        } 
+    }
+
 
 
     this.buildMessage = function(name) {
@@ -180,6 +197,7 @@ oc.layer = function opencoin_layer(api,storage) {
     this.requestCDD = function (serial) {
         var message = this.buildMessage('RequestCDD');
         message.cdd_serial = serial;
+        this.queueMessage(message);
         return message;
     }
 
@@ -664,6 +682,5 @@ oc.layer = function opencoin_layer(api,storage) {
         return sum;
     }
    
-
 
 }
