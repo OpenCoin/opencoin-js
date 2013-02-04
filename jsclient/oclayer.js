@@ -81,7 +81,8 @@ oc.layer = function opencoin_layer(api,storage) {
         return this.callHandler(message);
     }
 
-    this.serializeStorage = function() {
+    this.serializeStorage = function(storage) {
+        if (storage == undefined) storage = this.storage;
         function innerToData(value,ignored,master) {
             var type = typeof(value);
             if (['string','number'].indexOf(type)!=-1) {
@@ -103,8 +104,8 @@ oc.layer = function opencoin_layer(api,storage) {
             }
         }
         var out = {};
-        for (name in this.storage) {
-            out[name] = innerToData(this.storage[name],undefined,this.storage);
+        for (name in storage) {
+            out[name] = innerToData(storage[name],undefined,storage);
         }
         return out;
     }

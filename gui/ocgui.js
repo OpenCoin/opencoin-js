@@ -1,12 +1,3 @@
-suite = oc.crypto.rsa_sha256_chaum86;
-api = new oc.api(suite);
-
-var database = {};
-var activecurrencyid;
-var response;
-
-wallet = new oc.layer(api);
-
 
 
 function interact(url,message,guihandler,print) {
@@ -18,7 +9,8 @@ function interact(url,message,guihandler,print) {
         //var out = wallet.callHandler(reply);
         guihandler(reply);
         if (print) console.log(reply);
-        response = reply;            
+        response = reply;    
+        storeDB();
     }).fail(function(){console.log('fail on post')});
 }
 
@@ -98,7 +90,47 @@ function makeCurrencyList() {
         var cddc = tmp.getCurrentCDDC();
         var cname = cddc.cdd.currency_name;
         clist.append("<li><a href='#currency'>"+cname+"</a></li>");
-
     }
     clist.listview('refresh');
 }
+
+function serializeDB() {
+    var out = {};
+    for (name in database) {
+        out[name] = wallet.serializeStorage(database[name]);
+    }
+    return JSON.stringify(out);
+}
+
+function deserializeDB(json) {
+    var db = JSON.parse(json);
+    var out = {};
+    for (name in db) {
+        out[name] = wallet.deserializeStorage(db[name]);    
+    }
+    return out;
+}
+
+function storeDB() {
+    localStorage['opencoin'] = serializeDB();
+    console.log('stored db');
+}
+
+function loadDB() {
+    var json = localStorage['opencoin'];
+    if (json == undefined) {
+        database = {};
+        storeDB();
+    }
+    database = deserializeDB(json);
+}
+
+suite = oc.crypto.rsa_sha256_chaum86;
+api = new oc.api(suite);
+
+var activecurrencyid;
+var response;
+
+wallet = new oc.layer(api);
+loadDB();
+
