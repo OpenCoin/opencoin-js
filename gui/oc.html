@@ -125,7 +125,8 @@
         <ul data-role="listview" data-inset="true" data-filter="false">
             <li><a href="#send">Send</a></li>
             <li><a href="#receive">Receive</a></li>
-            <li><a href="#info" data-rel='dialog'>Get change</a></li>
+            <li><a href="#info" data-rel='dialog' id='getchange'>Get change</a></li>
+            <li><a href="#processreceipt">Process receipt</a></li>
         </ul>
         
         <ul data-role="listview" data-inset="true" data-filter="false">
@@ -179,7 +180,7 @@
             <label for="subject">Subject</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
-		<a href="#sendresult" xdata-rel='dialog' data-role="button">Send</a>
+		<a href="#sendresult" xdata-rel='dialog' data-role="button" class='confirm'>Send</a>
         </form>
 	</div>
 </div>
@@ -192,30 +193,11 @@
 
 	<div data-role="content">
         Send message created. Please transfer this to the recipient
-        <textarea name="message" id="message" data-role="none" rows='10' style='width:100%'>
-        {
-    "message_reference": 7,
-    "subject": "payment 1",
-    "coins": [
-        {
-            "payload": {
-                "protocol_version": "http://opencoin.org/1.0",
-                "issuer_id": "5fc006a33cebbace1699030b55091199965ee2bf0c5446a14786bba115069c56",
-                "cdd_location": "http://opencent.org",
-                "denomination": 5,
-                "mint_key_id": "be9a81eb50ef00eb818526653b71332333555dbf123d2e21370d350783b58759",
-                "serial": "8d4fd4586499cb47a24480739d6db1d2",
-                "type": "payload"
-            },
-            "signature": "74232dfa5a111dab0bab3f6f6a9bcf7b5438f959f824c6f2d15e3be6154ebeca66934382ae9e7e94673e9653df911033a351d1796b467267b66e9d5936424854",
-            "type": "coin"
-        }
-    ],
-    "type": "send coins"
-}
+        <textarea name="message" id="sendmessage" data-role="none" rows='10' style='width:100%'>
+        some crazy json
         </textarea>
-            <a href="mailto:?subject=Some greens for you&body=%20%7B%0A%20%20%20%20%22message_reference%22%3A%207%2C%0A%20%20%20%20%22subject%22%3A%20%22payment%201%22%2C%0A%20%20%20%20%22coins%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%22payload%22%3A%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22protocol_version%22%3A%20%22http%3A//opencoin.org/1.0%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22issuer_id%22%3A%20%225fc006a33cebbace1699030b55091199965ee2bf0c5446a14786bba115069c56%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22cdd_location%22%3A%20%22http%3A//opencent.org%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22denomination%22%3A%205%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22mint_key_id%22%3A%20%22be9a81eb50ef00eb818526653b71332333555dbf123d2e21370d350783b58759%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22serial%22%3A%20%228d4fd4586499cb47a24480739d6db1d2%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22type%22%3A%20%22payload%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22signature%22%3A%20%2274232dfa5a111dab0bab3f6f6a9bcf7b5438f959f824c6f2d15e3be6154ebeca66934382ae9e7e94673e9653df911033a351d1796b467267b66e9d5936424854%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22type%22%3A%20%22coin%22%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22type%22%3A%20%22send%20coins%22%0A%7D%0A" data-role='button' data-inline='true'>Email</a>
-        <a href='' data-role='button' data-inline='true'>Copy</a>
+            <a href="mailto:?subject=Some greens for you&body=some crazy json" data-role='button' data-inline='true'>Email</a>
+        <!--<a href='' data-role='button' data-inline='true'>Copy</a>-->
         <a href='#currency' data-role='button' data-icon='check' data-inline='true'>Done</a>
 	</div>
 </div>
@@ -229,12 +211,42 @@
 
 	<div data-role="content">
         Enter the message you received.
-        <textarea name="message" id="message" data-role="none" rows='10' style='width:100%'>
-        </textarea>
-        <a href='#info' data-rel='dialog' data-role='button'>Receive</a>
+        <textarea name="message" id="receivemessage" data-role="none" rows='10' style='width:100%' autocomplete="off"></textarea>
+        <a href='#info' data-rel='dialog' data-role='button' class='confirm'>Receive</a>
 	</div>
 </div>
 
+
+
+<div data-role="page" id="receiveresult" data-theme="b">
+	<div data-role="header" data-position="fixed">
+		<h1 class='currencyname'>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+       <div>Received <span id='receivedamount'>123</span> <span class='currencyname'>Greenbucks</span><br/>
+       Please transfer the following receipt to the sender</div>
+        <textarea name="message" id="receipt" data-role="none" rows='10' style='width:100%'>
+        some crazy json
+        </textarea>
+            <a href="mailto:?subject=Some greens for you&body=some crazy json" data-role='button' data-inline='true'>Email</a>
+        <!--<a href='' data-role='button' data-inline='true'>Copy</a>-->
+        <a href='#currency' data-role='button' data-icon='check' data-inline='true'>Done</a>
+	</div>
+</div>
+
+<div data-role="page" id="processreceipt" data-theme="b">
+	<div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1 class='currencyname'>Greenbucks</h1>
+	</div>
+
+	<div data-role="content">
+        Enter the receipt you received.
+        <textarea name="message" id="receivedreceipt" data-role="none" rows='10' style='width:100%' autocomplete="off"></textarea>
+        <a href='#alert' data-role='button' class='confirm'>Process receipt</a>
+	</div>
+</div>
 
 <div data-role="page" id="deposit" data-theme="b">
 	<div data-role="header" data-position="fixed">
@@ -253,20 +265,19 @@
             <label for="subject">Subject</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
-		<a  href="#info" data-rel='dialog' data-role="button">Deposit</a>
+		<a  href="#info" data-rel='dialog' data-role="button" class='confirm'>Deposit</a>
         </form>
 	</div>
 </div>
 
 <div data-role="page" id="info" data-theme='b'>
 	<div data-role="header" data-position="fixed">
-		<h1>please wait</h1>
+		<h1 id='infoheader'>please wait</h1>
 	</div>
 
-	<div data-role="content">
+	<div data-role="content" id='infotext'>
 		working...
 	</div>
-
 </div>
 
 <div data-role="dialog" id="error" data-theme='b'>
@@ -278,6 +289,18 @@
 		We have the following problem:
         <blockquote id='errormessage'>errormessage</blockquote>
 		<a href="back" data-role="button" data-rel='back'>Ok</a>
+	</div>
+</div>
+
+
+<div data-role="page" id="alert" data-theme='b'>
+	<div data-role="header" data-position="fixed">
+		<h1 id='alertheader'>please wait</h1>
+	</div>
+
+	<div data-role="content"><span id='alerttext'>
+		working...</span>
+    <a href='#currency' data-role="button">Ok</a>
 	</div>
 </div>
 

@@ -43,13 +43,13 @@ function setupServer() {
     issuer_public = issuer_private.getPublicKey();
     server.storage.dsdb = {};
     params = {};
-    params.cdd_location = 'http://localhost:6789/';
+    params.cdd_location = 'http://10.0.0.3:6789/';
     params.cdd_serial = 1;
     params.cdd_signing_date = new Date("2012-12-30T11:46:00");
     params.cdd_expiry_date = new Date("2014-12-31T23:59:59");
     params.currency_name = 'TestTaler';
     params.currency_divisor = 100;
-    params.validation_service = [[10,'http://localhost:6789']];
+    params.validation_service = [[10,'http://10.0.0.3:6789']];
     params.info_service =  [[10,'http://localhost:6789']];
     params.renewal_service =  [[10,'http://localhost:6789']];
     params.invalidation_service =  [[10,'http://localhost:6789']];
@@ -101,6 +101,7 @@ function startServer() {
                     };
                     try {
                         var mdata = JSON.parse(body);
+                        console.log(body);
                         var res = server.dispatch(mdata);
                         var type = res.type;
                         if (type!=undefined && ['response minting','response invalidation'].indexOf(type)!=-1) {

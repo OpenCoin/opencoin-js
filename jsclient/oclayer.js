@@ -311,7 +311,7 @@ oc.layer = function opencoin_layer(api,storage) {
     this.sh['response mint keys'] = this.handleResponseMintKeys;
 
 
-    this.requestValidation = function(authorization_info,amount) {
+    this.requestValidation = function(amount,authorization_info) {
         var message = this.buildMessage('RequestValidation');
         var cddc = this.getCurrentCDDC();
         var tokens = this.api.tokenize(cddc.cdd.denominations,amount);

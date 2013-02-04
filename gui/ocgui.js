@@ -20,6 +20,18 @@ function showError(text) {
     $('#errormessage').html(text);
 }
 
+function showInfo(header,text) {
+    $.mobile.changePage('#info',{'role':'dialog'});
+    $('#infoheader').html(header);
+    $('#infotext').html(text);
+}
+
+function showAlert(header,text,target) {
+    $.mobile.changePage('#alert',{'role':'dialog'});
+    $('#alertheader').html(header);
+    $('#alerttext').html(text);
+}
+
 function pr(obj) {
     console.log(JSON.stringify(obj));    
 }
@@ -57,7 +69,7 @@ $(function(e,data) {
         out = wallet.callHandler(r);
         page.removeData('r');
         var cddc = wallet.getCurrentCDDC();
-        var url = cddc.cdd.info_service[0][1];
+        var url = cddc.cdd.cdd_location;
         interact(url,wallet.requestMintKeys(),function(r){
             wallet.callHandler(r);   
             var cdd_cid = wallet.api.getKeyId(cddc.cdd.issuer_public_master_key);
@@ -102,18 +114,125 @@ $(function(e,data) {
             amount = amount.toFixed(Math.log(cdd.currency_divisor)/Math.log(10));
         }
         amount = amount * cdd.currency_divisor;
-        console.log(amount);
         var auth_info = $('#withdraw input[name="subject"]').val();
         var validationurl = cdd.validation_service[0][1];
+        var renewalurl = cdd.renewal_service[0][1];
+        showInfo('Please wait','withdrawing coins...');
         cdd_mk_interaction(function(){
-             interact(validationurl,wallet.requestValidation(auth_info,amount),function(r) {
+             interact(validationurl,wallet.requestValidation(amount,auth_info),function(r) {
                 wallet.callHandler(r);    
-                coinsound.play();
-                $.mobile.changePage('#currency');  
+                //showInfo('Please wait','refreshing coins...');
+                //interact(renewalurl,wallet.requestRenewal(),function(r) {
+                //    wallet.callHandler(r);
+                    coinsound.play();
+                    $.mobile.changePage('#currency');  
+                //});
              });
         });
     });
-       
+
+    $('#getchange').on('click',function(e,data) {
+        showInfo('Please wait','refreshing coins...');
+        var cdd = wallet.getCurrentCDDC().cdd;
+        var renewalurl = cdd.renewal_service[0][1];
+        cdd_mk_interaction(function(){
+            interact(renewalurl,wallet.requestRenewal(),function(r) {
+                wallet.callHandler(r);
+                coinsound.play();
+                $.mobile.changePage('#currency');  
+            });
+        });
+        return false;    
+    });
+ 
+    $('#deposit .confirm').on('click',function(e,data) {
+        var amount = parseFloat($('#deposit input[name="amount"]').val());
+        if (isNaN(amount)) {
+            showError('The amount needs to be a number');
+            return false;
+        }
+        var cdd = wallet.getCurrentCDDC().cdd;
+        if (amount % 1 != 0) {
+            amount = amount.toFixed(Math.log(cdd.currency_divisor)/Math.log(10));
+        }
+        amount = amount * cdd.currency_divisor;
+        var auth_info = $('#deposit input[name="subject"]').val();
+        var invalidationurl = cdd.invalidation_service[0][1];
+        var renewalurl = cdd.renewal_service[0][1];
+        showInfo('Please wait','deposit coins...');
+        interact(invalidationurl,wallet.requestInvalidation(amount,auth_info),function(r) {
+            wallet.callHandler(r);    
+            //showInfo('Please wait','refreshing coins...');
+            //interact(renewalurl,wallet.requestRenewal(),function(r) {
+            //        wallet.callHandler(r);
+                    $.mobile.changePage('#currency');  
+            //    });
+        });
+        return false;
+    });
+    
+    $('#send .confirm').on('click',function(e,data) {
+        var amount = parseFloat($('#send input[name="amount"]').val());
+        if (isNaN(amount)) {
+            showError('The amount needs to be a number');
+            return false;
+        }
+        var cdd = wallet.getCurrentCDDC().cdd;
+        if (amount % 1 != 0) {
+            amount = amount.toFixed(Math.log(cdd.currency_divisor)/Math.log(10));
+        }
+        amount = amount * cdd.currency_divisor;
+        var auth_info = $('#send input[name="subject"]').val();
+        m = wallet.requestSendCoins(amount,auth_info);
+        storeDB();
+        $('#sendmessage').html(m.toJson());
+    });
+    
+    $("#sendmessage, #receipt").focus(function() {
+        var $this = $(this);
+        $this.select();
+
+        // Work around Chrome's little problem
+        $this.mouseup(function() {
+            // Prevent further mouseup intervention
+            $this.unbind("mouseup");
+            return false;
+        });
+    });
+
+
+    $('#receive .confirm').on('click',function(e,data) {
+        var data = $('#receivemessage').val();
+        console.log(data);
+        var parsed = JSON.parse(data);
+        var message = wallet.parseData(parsed); 
+        var cdd = wallet.getCurrentCDDC().cdd;
+        var renewalurl = cdd.renewal_service[0][1];
+        cdd_mk_interaction(function(){
+            interact(renewalurl,wallet.requestRenewal(message.coins),function(r) {
+                wallet.callHandler(r);
+                coinsound.play();
+                storeDB();
+                $.mobile.changePage('#receiveresult');
+                response = wallet.responseSendCoins(message);
+                $('#receipt').html(response.toJson());
+            });
+        });
+    });
+
+    $('#processreceipt .confirm').on('click',function(e,data) {
+        var area = $('#receivedreceipt');
+        var data = area.val();
+        var parsed = JSON.parse(data);
+        var message = wallet.parseData(parsed);
+        wallet.callHandler(message);
+        storeDB();
+        area.val('');
+        showAlert('Processed','The receipt is processed');
+        return false;
+    });
+
+      
 });
 
 function cdd_mk_interaction (interaction) {
@@ -137,14 +256,20 @@ $('#currencies').live('pageshow',function (e,data) {
     makeCurrencyList();
 });
 
+
 $(document).bind('pagebeforechange',function(e,data){
     if (typeof data.toPage !== 'string') return;
     var parsed = $.mobile.path.parseUrl(data.toPage);
     if (parsed.hash != "" && ['#currencies','#addcurrency'].indexOf(parsed.hash) === -1 && wallet.storage == undefined) {
-        e.preventDefault();
-        document.location.href=parsed.pathname;
-        console.log('redirect');
-        return;
+        if (Object.keys(database).length) {
+            wallet.setActiveStorage(database[Object.keys(database)[0]]);
+            return true;
+        } else {
+            e.preventDefault();
+            document.location.href=parsed.pathname;
+            console.log('redirect');
+            return false;
+        }
      }
 });
 

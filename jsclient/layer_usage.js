@@ -104,7 +104,7 @@ pcontainer('Request Mint Keys (no parameters)',m);
 pcontainer('Rsponse Mint Keys',response);
 
 //trigger request resume
-m = alice.requestValidation('please delay',10);
+m = alice.requestValidation(10,'please delay');
 response = server.dispatch(m.toData());
 try {
 alice.dispatch(response.toData());
@@ -124,7 +124,7 @@ pcontainer('Request Resume',m);
 pcontainer('Rsponse Minting',response);
 
 //trigger validation
-m = alice.requestValidation('testauth',10);
+m = alice.requestValidation(10,'testauth');
 response = server.dispatch(m.toData());
 alice.dispatch(response.toData());
 
