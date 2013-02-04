@@ -101,7 +101,7 @@ function startServer() {
                     };
                     try {
                         var mdata = JSON.parse(body);
-                        console.log(body);
+                        //console.log(body);
                         var res = server.dispatch(mdata);
                         var type = res.type;
                         if (type!=undefined && ['response minting','response invalidation'].indexOf(type)!=-1) {
