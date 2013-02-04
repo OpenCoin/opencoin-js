@@ -261,7 +261,7 @@ $(document).bind('pagebeforechange',function(e,data){
     if (typeof data.toPage !== 'string') return;
     var parsed = $.mobile.path.parseUrl(data.toPage);
     if (parsed.hash != "" && ['#currencies','#addcurrency'].indexOf(parsed.hash) === -1 && wallet.storage == undefined) {
-        if (Object.keys(database).length) {
+        if (0 && Object.keys(database).length) { //for development, turn off in real life
             wallet.setActiveStorage(database[Object.keys(database)[0]]);
             return true;
         } else {
