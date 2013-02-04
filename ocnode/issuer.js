@@ -53,43 +53,25 @@ function setupServer() {
     params.info_service =  [[10,'http://localhost:6789']];
     params.renewal_service =  [[10,'http://localhost:6789']];
     params.invalidation_service =  [[10,'http://localhost:6789']];
-    params.denominations=[1,2,5];
+    params.denominations=[1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000];
     params.additional_info='';
 
     var cddc = api.makeCDDC(issuer_private,params);
     server.addCDDC(cddc);
 
-
-    params = {};
-    params.denomination = 1;
-    params.notBefore = new Date("2013-01-01");
-    params.notAfter = new Date("2013-06-30");
-    params.coins_expiry_date = new Date('2013-12-31');
-    mkout = api.makeMKC(issuer_private,cddc,params);
-    mkc = mkout.mkc;
-    private_mintkey = mkout.private_mintkey;
-    server.addMKC(mkc,private_mintkey);
-
-    params = {};
-    params.denomination = 2;
-    params.notBefore = new Date("2013-01-01");
-    params.notAfter = new Date("2013-06-30");
-    params.coins_expiry_date = new Date('2013-12-31');
-    mkout2 = api.makeMKC(issuer_private,cddc,params);
-    mkc2 = mkout2.mkc;
-    private_mintkey2 = mkout2.private_mintkey;
-    server.addMKC(mkc2,private_mintkey2);
-
-    params = {};
-    params.denomination = 5;
-    params.notBefore = new Date("2013-01-01");
-    params.notAfter = new Date("2013-06-30");
-    params.coins_expiry_date = new Date('2013-12-31');
-    mkout3 = api.makeMKC(issuer_private,cddc,params);
-    mkc3 = mkout3.mkc;
-    private_mintkey3 = mkout3.private_mintkey;
-    server.addMKC(mkc3,private_mintkey3);
-}
+    for (i in cddc.cdd.denominations) {
+        var denomination = cddc.cdd.denominations[i];
+        params = {};
+        params.denomination = denomination;
+        params.notBefore = new Date("2013-01-01");
+        params.notAfter = new Date("2013-06-30");
+        params.coins_expiry_date = new Date('2013-12-31');
+        mkout = api.makeMKC(issuer_private,cddc,params);
+        mkc = mkout.mkc;
+        private_mintkey = mkout.private_mintkey;
+        server.addMKC(mkc,private_mintkey);
+    }
+    }
 
 function startServer() {
 
@@ -151,6 +133,7 @@ function startServer() {
         }).listen(6789);
 
     console.log('Server running on port 6789');
+    console.log('currencyid: '+server.currencyId());
 }    
 
 

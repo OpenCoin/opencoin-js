@@ -478,7 +478,6 @@ oc.layer = function opencoin_layer(api,storage) {
         return selected;
     }
 
- 
 
     this.sanitycheckCoins = function(coins) {
         var cddc = this.getCurrentCDDC();
@@ -682,6 +681,13 @@ oc.layer = function opencoin_layer(api,storage) {
         for (var i in coinarray) sum += coinarray[i].payload.denomination;
         return sum;
     }
-   
+  
+    this.currencyName = function() {
+        return this.getCurrentCDDC().cdd.currency_name;    
+    }
+
+    this.currencyId = function() {
+       return this.api.getKeyId(this.getCurrentCDDC().cdd.issuer_public_master_key);
+    }
 
 }

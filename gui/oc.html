@@ -11,6 +11,11 @@
         $(document).bind("mobileinit", function(){
             $.mobile.defaultPageTransition='none';
             $.mobile.defaultDialogTransition='none';
+            /*
+            $.mobile.hashListeningEnabled = false;
+            $.mobile.pushStateEnabled = false;
+            $.mobile.changePage.defaults.changeHash = false;
+            */
         });
     </script>
 	<script src="jquery.mobile-1.2.0.min.js"></script>
@@ -30,10 +35,12 @@
                 width: 500px !important;
             }
         }*/
+        #info.ui-dialog .ui-header a[data-icon="delete"] {
+             display: none;
+        }
     </style>
 </head> 
 <body data-theme="b"> 
-
 
 <div data-role="page" id="currencies"  data-theme='b' xdata-add-back-btn="true">
 	<div data-role="header" data-position="fixed">
@@ -84,6 +91,7 @@
 	</div>
 </div>
 
+
 <div data-role="dialog" id="addingcurrency" data-theme='b'>
 	<div data-role="header" data-position="fixed">
 		<h1>Adding currency</h1>
@@ -102,16 +110,18 @@
         <a href="#addcurrency" data-role="button" class='cancel' data-theme='c' data-icon='alert'>No, I want to cancel</a>
 	</div>
 </div>
+
+
 <div data-role="page" id="currency"  data-add-back-btn="true" data-theme='b'>
     <div data-role="header" data-position="fixed">
         <a href="#currencies" data-icon="home" data-iconpos="notext">Home</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
-        <h3>You have 217.03 Greenbucks</h3>
+        <h3>You have <span class='currencysum'>217.03</span> <span class='currencyname'>Greenbucks</span></h3>
         
-        <div>currency id: abcdef12341234efab</div> 
+        <div>currency id: <span class='currencyid'>abcdef12341234efab</span></div> 
         <ul data-role="listview" data-inset="true" data-filter="false">
             <li><a href="#send">Send</a></li>
             <li><a href="#receive">Receive</a></li>
@@ -134,11 +144,11 @@
 
 	<div data-role="header" data-position="fixed">
         <a href='#currency' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 	<div data-role="content">
     Enter the amount you want to withdraw, and the subject as required by the issuer.
- 
+      <form> 
         <div data-role='fieldcontain'>
             <label for="amount">Amount</label>
             <input name="amount" id="amount" value="" type='number'/>
@@ -147,14 +157,15 @@
             <label for="subject">Subject</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
-		<a href="#info" data-rel='dialog' data-role="button">Withdraw</a>
+		<a href="#info" data-rel='dialog' data-role="button" class='confirm'>Withdraw</a>
+      </form>
 	</div>
 </div>
 
 <div data-role="page" id="send" data-theme="b">
 	<div data-role="header" data-position="fixed">
         <a href='#currency' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -176,7 +187,7 @@
 
 <div data-role="page" id="sendresult" data-theme="b">
 	<div data-role="header" data-position="fixed">
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -213,7 +224,7 @@
 <div data-role="page" id="receive" data-theme="b">
 	<div data-role="header" data-position="fixed">
         <a href='#currency' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -228,7 +239,7 @@
 <div data-role="page" id="deposit" data-theme="b">
 	<div data-role="header" data-position="fixed">
         <a href='#currency' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -249,13 +260,13 @@
 
 <div data-role="page" id="info" data-theme='b'>
 	<div data-role="header" data-position="fixed">
-		<h1>action happening</h1>
+		<h1>please wait</h1>
 	</div>
 
 	<div data-role="content">
-		something is going on...
-		<a href="#currency" data-role="button">Ok</a>
+		working...
 	</div>
+
 </div>
 
 <div data-role="dialog" id="error" data-theme='b'>
@@ -273,7 +284,7 @@
 <div data-role="page" id="more"  data-theme='b'>
     <div data-role="header" data-position="fixed">
         <a href='#currency' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -295,7 +306,7 @@
 <div data-role="page" id="coins" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#more' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -316,7 +327,7 @@
 <div data-role="page" id="coin" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#coins' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -345,7 +356,7 @@
 <div data-role="page" id="cddcs" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#more' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -366,7 +377,7 @@
 <div data-role="page" id="cddc" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#cddcs' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -434,7 +445,7 @@
 <div data-role="page" id="mkcs" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#more' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -453,7 +464,7 @@
 <div data-role="page" id="mkc" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#mkcs' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -488,7 +499,7 @@
 <div data-role="page" id="messages" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#more' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -506,7 +517,7 @@
 <div data-role="page" id="message" data-theme='b'>
 	<div data-role="header" data-position="fixed">
         <a href='#messages' data-icon='back'>back</a>
-		<h1>Greenbucks</h1>
+		<h1 class='currencyname'>Greenbucks</h1>
 	</div>
 
 	<div data-role="content">
@@ -539,10 +550,10 @@
 	</div>
 
 	<div data-role="content">
-		<h1>Delete Greenbucks?</h1>
-        You will 217.03 Greenbucks if you do this. Are you really, really sure? Like, absolutely sure?
+		<h1>Delete currency <span class='currencyname'>Greenbuck</span>?</h1>
+        You will lose <span class='currencysum'>217.03</span> <span class='currencyname'>Greenbucks</span> if you do this. Are you really, really sure? Like, absolutely sure?
 		<a href="#more" data-role="button" data-icon='back'>Be safe, go back</a>
-		<a href="#currencies" data-role="button" data-theme='c' data-icon='delete'>Ok, delete currency</a>
+		<a href="#currencies" class='confirm' data-role="button" data-theme='c' data-icon='delete'>Ok, delete currency</a>
 	</div>
 </div>
 </body>
