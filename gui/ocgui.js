@@ -215,6 +215,7 @@ $(function(e,data) {
                 storeDB();
                 $.mobile.changePage('#receiveresult');
                 response = wallet.responseSendCoins(message);
+                $('#receivemessage').val('');
                 $('#receipt').html(response.toJson());
             });
         });
