@@ -186,6 +186,7 @@ $(function(e,data) {
         m = wallet.requestSendCoins(amount,auth_info);
         storeDB();
         $('#sendmessage').html(m.toJson());
+        $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+JSON.stringify(m.toData()));
     });
     
     $("#sendmessage, #receipt").focus(function() {
@@ -217,6 +218,7 @@ $(function(e,data) {
                 response = wallet.responseSendCoins(message);
                 $('#receivemessage').val('');
                 $('#receipt').html(response.toJson());
+                $('#receiveresult a.email').attr('href','mailto:?subject=Your receipt&body='+JSON.stringify(response.toData()));
             });
         });
     });
