@@ -103,7 +103,7 @@ oc.crypto.rsa_sha256_chaum86 = new function() {
         //XXX do this with a proper algorithm
         if (length==undefined) length = this.default_key_length;
 
-        var e = this.s2b('65537');
+        var e = this.s2b('10001');
         var l = length/2;
         var i = 1;
         var j = 1;
