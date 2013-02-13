@@ -13,10 +13,11 @@
             $.mobile.defaultDialogTransition='none';
             /*uncomment this to disable hash history. Useful to comment
               this for development*/
-            
+            /* 
             $.mobile.hashListeningEnabled = false;
             $.mobile.pushStateEnabled = false;
             $.mobile.changePage.defaults.changeHash = false;
+            */
         });
     </script>
 	<script src="jquery.mobile-1.2.0.min.js"></script>
@@ -327,10 +328,10 @@
 	</div>
 
 	<div data-role="content">
-	    <div>Coins you hold</div>
+	    <div><span class='currencyname'>Coins you hold</div>
 		
-        <div data-role="collapsible-set" data-theme='d'>	
-            <ul data-role="listview" data-inset='true'>
+        <div xdata-role="collapsible-set" data-theme='d'>	
+            <ul data-role="listview" data-inset='true' id='coinlist'>
                 <li><a href="#coin">1 Greenbuck</a></li>
                 <li><a href="#coin">2 Greenbuck</a></li>
                 <li><a href="#coin">2 Greenbuck</a></li>
@@ -348,23 +349,9 @@
 	</div>
 
 	<div data-role="content">
-    1 Greenbuck
+    <span id='coinvalue'>1</span> <span class='currencyname'>Greenbuck</span>
        <form>
-        <textarea>
-        {
-            "payload": {
-                "protocol_version": "http://opencoin.org/1.0",
-                "issuer_id": "82abccea8c82981adce47a9ddbfb1f43317b29ffe1393445317de0c455e9e028",
-                "cdd_location": "http://opencent.org",
-                "denomination": 5,
-                "mint_key_id": "f0807f8cd9e8c14d8c25249959f69b81f57ca4be787e891ecd4fd3277c648b6f",
-                "serial": "f15634dd644c9bc9114a8be855578020",
-                "type": "payload"
-            },
-            "signature": "322ed0d11f945ad6d38f3839e8dea7f5a1f089e1daa11b03a63929c7dc82505fbcc2863a67ed2c34ef7747c44d4f2b0376252a77d959844bd2da3c7ba561267a",
-            "type": "coin"
-        }
-        </textarea>
+        <textarea>Go back and select a coin</textarea>
        </form>
     </div>	    		
 </div>

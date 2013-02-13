@@ -63,9 +63,9 @@ $(function(e,data) {
                 if (0 && cdd_cid.indexOf(cid) != 0) {
                     showError('The currency id does not match')
                 } else {
-                    $.mobile.changePage('#addingcurrency');  
                     $('#cidarea').html(quads(cdd_cid));
                     $('#addingcurrency').data('r',r);
+                    $.mobile.changePage('#addingcurrency');  
                 };
                 //console.log(cdd_cid);
             });                   
@@ -201,7 +201,7 @@ $(function(e,data) {
         m = wallet.requestSendCoins(amount,auth_info);
         storeDB();
         $('#sendmessage').html(m.toJson());
-        $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+JSON.stringify(m.toData()));
+        $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+encodeURI(JSON.stringify(m.toData())));
     });
 
 
@@ -273,12 +273,37 @@ $('#currencies').live('pageshow',function (e,data) {
     makeCurrencyList();
 });
 
+$('#coins').live('pageshow', function(e,data) {
+    var page = $('#coins');
+    var clist = $('#coins #coinlist');
+    clist.html('');
+    var cddc = wallet.getCurrentCDDC();
+
+    for (d in wallet.storage.coins) {
+        var coinlist = wallet.storage.coins[d];
+        for (i in coinlist) {
+            var coin = coinlist[i];
+            var d = coin.payload.denomination;
+            var amount = d/cddc.cdd.currency_divisor;
+            clist.append("<li><a href='#coin' coinid='"+d+'-'+i+"'>"+amount+" <span class='currencyname'></span></a></li>");
+        }
+    }
+    $('#coinlist a').on('click',function(e,data){
+        var coinid = $(this).attr('coinid');
+        var parts = coinid.split('-');
+        var coin = wallet.storage.coins[parts[0]][parts[1]];
+        $('#coin textarea').html(coin.toJson()); 
+        $('#coin #coinvalue').html(coin.payload.denomination/cddc.cdd.currency_divisor); 
+    });
+    clist.listview('refresh');
+});
+
 
 $(document).bind('pagebeforechange',function(e,data){
     if (typeof data.toPage !== 'string') return;
     var parsed = $.mobile.path.parseUrl(data.toPage);
     if (parsed.hash != "" && ['#currencies','#addcurrency'].indexOf(parsed.hash) === -1 && wallet.storage == undefined) {
-        if (0 && Object.keys(database).length) { //for development, turn off in real life
+        if (1 && Object.keys(database).length) { //for development, turn off in real life
             wallet.setActiveStorage(database[Object.keys(database)[0]]);
             return true;
         } else {
