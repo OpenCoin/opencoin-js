@@ -36,6 +36,16 @@ function pr(obj) {
     console.log(JSON.stringify(obj));    
 }
 
+function quads(text) {
+    var out = '';
+    for (var i=0; i < text.length; i++) {
+        out+=text[i];
+        if ((i+1)%4==0) out+=' ';
+    }
+    return out;
+}
+
+
 $(function(e,data) {
 
 
@@ -54,12 +64,7 @@ $(function(e,data) {
                     showError('The currency id does not match')
                 } else {
                     $.mobile.changePage('#addingcurrency');  
-                    var html = '';
-                    for (var i=0; i < cdd_cid.length; i++) {
-                        html+=cdd_cid[i];
-                        if ((i+1)%4==0) html+=' ';
-                    }
-                    $('#cidarea').html(html);
+                    $('#cidarea').html(quads(cdd_cid));
                     $('#addingcurrency').data('r',r);
                 };
                 //console.log(cdd_cid);
@@ -67,6 +72,7 @@ $(function(e,data) {
         }); 
         return false;
     });
+
 
     $("#addingcurrency a.confirm").on('click',function(e,data){
         var page =  $('#addingcurrency')
@@ -84,6 +90,7 @@ $(function(e,data) {
         }); 
         return false;
     });
+
 
      $("#addingcurrency a.cancel").on('click',function(e,data){
         var page =  $('#addingcurrency')
@@ -106,7 +113,7 @@ $(function(e,data) {
     
     coinsound = document.createElement('audio');
     coinsound.setAttribute('src', 'coinsound.ogg');
-    
+  
     
     $('#withdraw .confirm').on('click',function(e,data) {
         var amount = parseFloat($('#withdraw input[name="amount"]').val());
@@ -136,6 +143,7 @@ $(function(e,data) {
         });
     });
 
+
     $('#getchange').on('click',function(e,data) {
         showInfo('Please wait','refreshing coins...');
         var cdd = wallet.getCurrentCDDC().cdd;
@@ -149,7 +157,8 @@ $(function(e,data) {
         });
         return false;    
     });
- 
+
+
     $('#deposit .confirm').on('click',function(e,data) {
         var amount = parseFloat($('#deposit input[name="amount"]').val());
         if (isNaN(amount)) {
@@ -175,7 +184,8 @@ $(function(e,data) {
         });
         return false;
     });
-    
+
+
     $('#send .confirm').on('click',function(e,data) {
         var amount = parseFloat($('#send input[name="amount"]').val());
         if (isNaN(amount)) {
@@ -193,7 +203,8 @@ $(function(e,data) {
         $('#sendmessage').html(m.toJson());
         $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+JSON.stringify(m.toData()));
     });
-    
+
+
     $("#sendmessage, #receipt").focus(function() {
         var $this = $(this);
         $this.select();
@@ -228,6 +239,7 @@ $(function(e,data) {
         });
     });
 
+
     $('#processreceipt .confirm').on('click',function(e,data) {
         var area = $('#receivedreceipt');
         var data = area.val();
@@ -239,8 +251,6 @@ $(function(e,data) {
         showAlert('Processed','The receipt is processed');
         return false;
     });
-
-      
 });
 
 function cdd_mk_interaction (interaction) {
@@ -257,7 +267,6 @@ function cdd_mk_interaction (interaction) {
         });
     });
 }
-
     
 
 $('#currencies').live('pageshow',function (e,data) {
@@ -291,7 +300,9 @@ $(document).live('pageshow',function(e,data) {
         $(v).text(wallet.sumStoredCoins.call(wallet)/wallet.getCurrentCDDC().cdd.currency_divisor);
     });
     page.find('.currencyid').each(function(i,v) {
-        $(v).text(wallet.currencyId.call(wallet).substr(0,20)+'...');
+
+        $(v).text(quads(wallet.currencyId.call(wallet)));
+        //$(v).text(wallet.currencyId.call(wallet).substr(0,20)+'...');
     });
 });
 
