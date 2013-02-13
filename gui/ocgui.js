@@ -50,11 +50,16 @@ $(function(e,data) {
                 //console.log(r);
                 var cddc = r.cdd;
                 var cdd_cid = wallet.api.getKeyId(cddc.cdd.issuer_public_master_key);
-                if (cdd_cid.indexOf(cid) != 0) {
+                if (0 && cdd_cid.indexOf(cid) != 0) {
                     showError('The currency id does not match')
                 } else {
                     $.mobile.changePage('#addingcurrency');  
-                    $('#cidarea').html(cdd_cid);
+                    var html = '';
+                    for (var i=0; i < cdd_cid.length; i++) {
+                        html+=cdd_cid[i];
+                        if ((i+1)%4==0) html+=' ';
+                    }
+                    $('#cidarea').html(html);
                     $('#addingcurrency').data('r',r);
                 };
                 //console.log(cdd_cid);
@@ -72,7 +77,7 @@ $(function(e,data) {
         var url = cddc.cdd.cdd_location;
         interact(url,wallet.requestMintKeys(),function(r){
             wallet.callHandler(r);   
-            var cdd_cid = wallet.api.getKeyId(cddc.cdd.issuer_public_master_key);
+            var cdd_cid = wallet.currencyId();
             database[cdd_cid]=wallet.storage;
             makeCurrencyList();
             $.mobile.changePage('#currencies');
@@ -95,12 +100,12 @@ $(function(e,data) {
         var cid = wallet.currencyId()
         console.log(cid);
         delete database[cid];
-        wallet.setActiveStorage({});
         storeDB();
+        wallet.setActiveStorage({});
     });
     
     coinsound = document.createElement('audio');
-    coinsound.setAttribute('src', 'coinsound.wav');
+    coinsound.setAttribute('src', 'coinsound.mp3');
     
     
     $('#withdraw .confirm').on('click',function(e,data) {

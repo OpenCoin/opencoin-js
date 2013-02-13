@@ -687,7 +687,8 @@ oc.layer = function opencoin_layer(api,storage) {
     }
 
     this.currencyId = function() {
-       return this.api.getKeyId(this.getCurrentCDDC().cdd.issuer_public_master_key);
+        key = this.getCurrentCDDC().cdd.issuer_public_master_key;       
+        return this.api.getKeyId(key);
     }
 
 }

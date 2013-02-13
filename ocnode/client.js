@@ -46,7 +46,7 @@ bob.name = 'Bob';
 interact(alice,alice.requestCDDSerial());
 interact(alice,alice.requestCDD(response.cdd_serial));
 interact(alice,alice.requestMintKeys());
-interact(alice,alice.requestValidation('testauth',10));
+interact(alice,alice.requestValidation(10,'testauth'));
 
 interact(bob,bob.requestCDDSerial());
 interact(bob,bob.requestCDD(response.cdd_serial));
