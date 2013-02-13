@@ -105,7 +105,7 @@ $(function(e,data) {
     });
     
     coinsound = document.createElement('audio');
-    coinsound.setAttribute('src', 'coinsound.mp3');
+    coinsound.setAttribute('src', 'coinsound.ogg');
     
     
     $('#withdraw .confirm').on('click',function(e,data) {
