@@ -368,7 +368,7 @@
 		
         <div data-role="collapsible-set" data-theme='d'>	
             <ul data-role="listview" data-inset='true'>
-                <li><a href="#cddc">serial 1, Greenbuck, http://greenbucks.org/</a></li>
+                <li><a href="#cddc" cddcid=''>serial 1, Greenbuck, http://greenbucks.org/</a></li>
                 <li><a href="#cddc">serial 2, Greenbuck, http://greenbucks.org/</a></li>
                 <li><a href="#cddc">serial 3, Greenbuck, http://greenbucks.org/</a></li>
                 <li><a href="#cddc">serial 4, Greenbuck, http://greenbucks.org/</a></li>
@@ -385,63 +385,9 @@
 	</div>
 
 	<div data-role="content">
-    Currency description document, serial 1
+    Currency description document, serial <span id='cddcserial'>1</span>
        <form>
-        <textarea>
-{
-    "cdd": {
-        "protocol_version": "http://opencoin.org/1.0",
-        "cdd_location": "http://opencent.org",
-        "issuer_cipher_suite": "RSA-SHA512-CHAUM86",
-        "issuer_public_master_key": {
-            "modulus": "9eb0aaa5a787f2641203b044e162dea88ca829092b23efd3848cec606d93e822c7a816099efc5453786a9d6f7026a581dc34551f8fed9d1deb896d6f4d4e76db",
-            "public_exponent": "65537",
-            "type": "rsa public key"
-        },
-        "cdd_serial": 1,
-        "cdd_signing_date": "2012-12-30T10:46:00Z",
-        "cdd_expiry_date": "2014-12-31T22:59:59Z",
-        "currency_name": "OpenCent",
-        "currency_divisor": 100,
-        "info_service": [
-            [
-                10,
-                "http://opencent.org"
-            ]
-        ],
-        "validation_service": [
-            [
-                10,
-                "http://opencent.org"
-            ],
-            [
-                20,
-                "http://opencent.com/validate"
-            ]
-        ],
-        "renewal_service": [
-            [
-                10,
-                "http://opencent.org"
-            ]
-        ],
-        "invalidation_service": [
-            [
-                10,
-                "http://opencent.org"
-            ]
-        ],
-        "denominations": [
-            1,
-            2,
-            5
-        ],
-        "additional_info": "",
-        "type": "cdd"
-    },
-    "signature": "54d95feaa053ec7be04d1b57416e53547297eb06dd3c9fb4388d5ee77d518318351c35179de833e6899f8d465581b48e130c51f1bdfda4b4d65cd322ac72d35f",
-    "type": "cdd certificate"
-}        </textarea>
+        <textarea>Go back and select a cdd</textarea>
        </form>
     </div>	    		
 </div>

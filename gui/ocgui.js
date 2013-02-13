@@ -299,6 +299,29 @@ $('#coins').live('pageshow', function(e,data) {
 });
 
 
+$('#cddcs').live('pageshow', function(e,data) {
+    var page = $('#cddcs');
+    var clist = $('#cddcs ul');
+    clist.html('');
+
+    for (i in wallet.storage.cddcs) {
+        var cddc = wallet.storage.cddcs[i];
+        var cdd = cddc.cdd;
+        clist.append("<li><a href='#cddc' cddcid='"+i+"'>serial "+cdd.cdd_serial+", "+cdd.currency_name+", "+cdd.cdd_location+"</a></li>");
+    }
+    $('#cddcs ul a').on('click',function(e,data){
+        var cddcid = $(this).attr('cddcid');
+        var cddc = wallet.storage.cddcs[cddcid];
+        $('#cddc textarea').html(cddc.toJson());
+        $('#cddcserial').html(cddc.cdd.cdd_serial);
+    });
+    clist.listview('refresh');
+});
+
+
+
+
+
 $(document).bind('pagebeforechange',function(e,data){
     if (typeof data.toPage !== 'string') return;
     var parsed = $.mobile.path.parseUrl(data.toPage);
