@@ -306,16 +306,15 @@
 	</div>
 
 	<div data-role="content">
-        <div><strong>Advanced actions</strong></div>
         <ul data-role="listview" data-inset="true" data-filter="false">
             <li><a href="#coins" data-icon='info'>Coins</a></li>
-            <li><a href="#cddcs" data-icon='info'>Currency descriptions</a></li>
             <li><a href="#mkcs" data-icon='info'>Mint key certificates</a></li>
+            <li><a href="#cddcs" data-icon='info'>Currency descriptions</a></li>
             <li><a href="#messages" data-icon='info'>Pending messages</a></li>
         </ul>
         
         <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#deletecurrency" data-icon='info'>Delete currency</a></li>
+            <li><a href="#deletecurrency" data-icon='info'>Delete <span class='currencyname'>currency</span></a></li>
         </ul>
     </div>
 </div>
@@ -418,29 +417,9 @@
 	</div>
 
 	<div data-role="content">
-    Denomination 1, Start: 1.1.2013, End 1.6.2013
+    Denomination <span id='mkcdenomination'>1</span>, Start: <span id='mkcstart'>1.1.2013</span>, End <span id='mkcend'>1.6.2013</span>
        <form>
-        <textarea>
-        {
-            "mint_key": {
-                "id": "b75330358fa5bfd3eda3798f5a070c446cca8f94ac78ef8e8c5263585a41dff8",
-                "issuer_id": "82abccea8c82981adce47a9ddbfb1f43317b29ffe1393445317de0c455e9e028",
-                "cdd_serial": 1,
-                "public_mint_key": {
-                    "modulus": "ad15048a0e8850405ad0bf27416906b5576eb24f6c10078810c9f1e7ca2c3c22960954f21eacc929c48958e19d48b3f1e0f2d9f998bc3d8163173c44603b73bb",
-                    "public_exponent": "65537",
-                    "type": "rsa public key"
-                },
-                "denomination": 1,
-                "sign_coins_not_before": "2013-01-01T00:00:00Z",
-                "sign_coins_not_after": "2013-06-30T00:00:00Z",
-                "coins_expiry_date": "2013-12-31T00:00:00Z",
-                "type": "mint key"
-            },
-            "signature": "953e030fa208dc1d5402f70707b75c5f9c24218351dab18c5747c8ce2f3c42c06ba5da54f2b1991b01f0ee63bbae01682de50a17ab9d5b895b0b2440342d08ad",
-            "type": "mint key certificate"
-        }
-        </textarea>
+        <textarea>Please go back and select an mkc</textarea>
        </form>
     </div>	    		
 </div>
@@ -453,14 +432,11 @@
 	</div>
 
 	<div data-role="content">
-	    <div>Pending messages</div>
-		
-        <div data-role="collapsible-set" data-theme='d'>	
-            <ul data-role="listview" data-inset='true'>
-                <li><a href="#message">Send Coins</a></li>
-                <li><a href="#message">Request Validation</a></li>
-            </ul>
-		</div>
+	    <div>All your pending messages</div>
+		 <ul data-role="listview" data-inset='true' id='messagelist'>
+            <li><a href="#message">Message 999: Send Coins</a></li>
+        </ul>
+
 	</div>
 </div>
 
@@ -471,24 +447,13 @@
 	</div>
 
 	<div data-role="content">
-    Request Validation
+    <h4>Message:  <span id='message_type'>not selected</span></h4>
+        <!--<a href='#messages' data-role='button' data-icon='check' data-inline='true'>Keep</a>
+        <a href='#messages' data-role='button' data-icon='delete' data-inline='true'>Delete</a>
+        <a href='#messages' data-role='button' data-icon='refresh' data-inline='true' id='recover_coins'>Recover coins</a>-->
+
        <form>
-        <textarea>
-{
-    "message_reference": 4,
-    "transaction_reference": "8c317048fcc62967825f46b51a1ca7de",
-    "authorization_info": "please delay",
-    "blinds": [
-        {
-            "reference": "r_0",
-            "blinded_payload_hash": "18aa321094a51bc4e79aaf88b55f70fd4384fb2144a207804294fbf1bd4f025de2276fd2ce56b6bdc1c2517e5f37088a400ff51d0b3c874789e6006bac72753b",
-            "mint_key_id": "b75330358fa5bfd3eda3798f5a070c446cca8f94ac78ef8e8c5263585a41dff8",
-            "type": "blinded payload hash"
-        },
-    ],
-    "type": "request validation"
-}
-        </textarea>
+        <textarea>Please go back and select a pending message</textarea>
        </form>
     </div>	    		
 </div>

@@ -318,7 +318,42 @@ $('#cddcs').live('pageshow', function(e,data) {
     clist.listview('refresh');
 });
 
+function shortDate(datetime) {
+    var out = '';    
+    out+=datetime.getDate();
+    out+= '. '+(datetime.getMonth()+1);
+    out+= '. '+datetime.getFullYear();
+    return out;
+}
 
+$('#mkcs').live('pageshow', function(e,data) {
+    var page = $('#mkcs');
+    var clist = $('#mkcs ul');
+    clist.html('');
+
+    for (i in wallet.storage.mintkeys) {
+        console.log(i);
+        if (i=='denominations') continue;
+        var mkc = wallet.storage.mintkeys[i];
+        var mint_key = mkc.mint_key;
+        var html = "<li><a href='#mkc' mkcid='"+i+"'>"+mint_key.denomination;
+        html+=', start: '+shortDate(mint_key.sign_coins_not_before);
+        html+=', end: '+shortDate(mint_key.sign_coins_not_after);
+        html+="</a></li>";
+        clist.append(html);
+    }
+    $('#mkcs ul a').on('click',function(e,data){
+        var mkcid = $(this).attr('mkcid');
+        var mkc = wallet.storage.mintkeys[mkcid];
+        var mint_key = mkc.mint_key;
+        $('#mkc textarea').html(mkc.toJson());
+        //$('#cddcserial').html(cddc.cdd.cdd_serial);
+        $('#mkcdenomination').html(mint_key.denomination);
+        $('#mkcstart').html(shortDate(mint_key.sign_coins_not_before));
+        $('#mkcend').html(shortDate(mint_key.sign_coins_not_after));
+    });
+    clist.listview('refresh');
+});
 
 
 
@@ -336,6 +371,29 @@ $(document).bind('pagebeforechange',function(e,data){
             return false;
         }
      }
+});
+
+
+$('#messages').live('pageshow', function(e,data) {
+    var page = $('#messages');
+    var clist = $('#messages #messagelist');
+    clist.html('');
+    var cddc = wallet.getCurrentCDDC();
+
+    for (name in wallet.mq) {
+        console.log(name);
+        if (name=='next_id') continue;
+        var message = wallet.mq[name];
+        clist.append("<li><a href='#message' messageid='"+name+"'>Message "+name+": "+message.type+"</a></li>");
+    }
+    $('#messagelist a').on('click',function(e,data){
+        var messageid = $(this).attr('messageid');
+        var message = wallet.mq[messageid];
+        $('#message textarea').html(message.toJson()); 
+        $('#message #message_type').html(message.type);
+        //if (message.type=='send coins') $('#recover_coins').button('enable');
+    });
+    clist.listview('refresh');
 });
 
 
