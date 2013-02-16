@@ -693,12 +693,19 @@ oc.layer = function opencoin_layer(api,storage) {
         return this.api.getKeyId(key);
     }
 
-    this.armorhead = '-----BEGIN OPENCOIN MESSAGE-----';
-    this.armortail = '-----END OPENCOIN MESSAGE-----';
+    this.armorhead = function (title) {
+        return '-----BEGIN OPENCOIN '+title.toUpperCase()+'-----';
+    }
 
-    this.armor = function armor(text,description) {
+
+    this.armortail = function (title) {
+        return '-----END OPENCOIN '+title.toUpperCase()+'-----';
+    }
+
+    
+    this.armor = function armor(title,text,description) {
         if (description==undefined) description = 'An armored opencoin message';
-        var out = this.armorhead;
+        var out = this.armorhead(title);
         out += '\n';
         out += 'Version: OpenCoin 1.0 (opencoin-js)\n'
         out += 'Comment: '+description+'\n\n';
@@ -708,12 +715,14 @@ oc.layer = function opencoin_layer(api,storage) {
             if ((i+1) % 72 == 0) out+='\n';
         }
         out += '\n';
-        out += this.armortail;
+        out += this.armortail(title);
         return out;
     }
-    this.unarmor = function unarmor(block) {
+
+
+    this.unarmor = function unarmor(title,block) {
         var parts = block.trim().split('\n\n'); 
-        var re = RegExp(this.armorhead+'\\n([\\s\\S]*)\\n\\n([\\s\\S]*)\\n'+this.armortail);
+        var re = RegExp(this.armorhead(title)+'\\n([\\s\\S]*)\\n\\n([\\s\\S]*)\\n'+this.armortail(title));
         var m = block.match(re);
         if (m) {
             var encoded = m[2];

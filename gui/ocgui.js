@@ -201,7 +201,7 @@ $(function(e,data) {
         m = wallet.requestSendCoins(amount,auth_info);
         storeDB();
         var description = amount/cdd.currency_divisor+' '+wallet.currencyName()+'. Open with any OpenCoin wallet app.';
-        var encoded = wallet.armor(m.toJson(),description);
+        var encoded = wallet.armor('STACK', m.toJson(),description);
         $('#sendmessage').html(encoded);
         $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+escape(encoded));
     });
@@ -222,7 +222,7 @@ $(function(e,data) {
 
     $('#receive .confirm').on('click',function(e,data) {
         var data = $('#receivemessage').val();
-        data = wallet.unarmor(data);
+        data = wallet.unarmor('STACK',data);
         var parsed = JSON.parse(data);
         var message = wallet.parseData(parsed); 
         var cdd = wallet.getCurrentCDDC().cdd;
@@ -235,7 +235,7 @@ $(function(e,data) {
                 $.mobile.changePage('#receiveresult');
                 response = wallet.responseSendCoins(message);
                 $('#receivemessage').val('');
-                var encoded = wallet.armor(response.toJson(),'A receipt for '+wallet.currencyName());
+                var encoded = wallet.armor('RECEIPT',response.toJson(),'A receipt for '+wallet.currencyName());
                 $('#receivedamount').html(wallet.sumCoins(message.coins)/cdd.currency_divisor);
                 $('#receipt').html(encoded);
                 $('#receiveresult a.email').attr('href','mailto:?subject=Your receipt&body='+escape(encoded));
@@ -247,7 +247,7 @@ $(function(e,data) {
     $('#processreceipt .confirm').on('click',function(e,data) {
         var area = $('#receivedreceipt');
         var data = area.val();
-        data = wallet.unarmor(data);
+        data = wallet.unarmor('RECEIPT',data);
         var parsed = JSON.parse(data);
         var message = wallet.parseData(parsed);
         wallet.callHandler(message);
