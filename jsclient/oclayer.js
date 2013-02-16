@@ -693,24 +693,27 @@ oc.layer = function opencoin_layer(api,storage) {
         return this.api.getKeyId(key);
     }
 
+    this.armorhead = '-----BEGIN OPENCOIN MESSAGE-----';
+    this.armortail = '-----END OPENCOIN MESSAGE-----';
+
     this.armor = function armor(text,description) {
         if (description==undefined) description = 'An armored opencoin message';
-        var out = '======BEGIN OPENCOIN MESSAGE BLOCK=====';
+        var out = this.armorhead;
         out += '\n';
-        out += description+'\n\n';
+        out += 'Version: OpenCoin 1.0 (opencoin-js)\n'
+        out += 'Comment: '+description+'\n\n';
         var encoded = btoa(text);
         for (i=0; i<encoded.length;i++) {
             out += encoded[i];
             if ((i+1) % 72 == 0) out+='\n';
         }
         out += '\n';
-        out += '======END OPENCOIN MESSAGE BLOCK=====';
+        out += this.armortail;
         return out;
     }
-
     this.unarmor = function unarmor(block) {
         var parts = block.trim().split('\n\n'); 
-        var re = /======BEGIN OPENCOIN MESSAGE BLOCK=====\n([\s\S]*)\n\n([\s\S]*)\n======END OPENCOIN MESSAGE BLOCK=====/;
+        var re = RegExp(this.armorhead+'\\n([\\s\\S]*)\\n\\n([\\s\\S]*)\\n'+this.armortail);
         var m = block.match(re);
         if (m) {
             var encoded = m[2];

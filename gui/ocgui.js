@@ -200,7 +200,7 @@ $(function(e,data) {
         var auth_info = $('#send input[name="subject"]').val();
         m = wallet.requestSendCoins(amount,auth_info);
         storeDB();
-        var description = 'Some '+wallet.currencyName()+' for you';
+        var description = amount/cdd.currency_divisor+' '+wallet.currencyName()+'. Open with any OpenCoin wallet app.';
         var encoded = wallet.armor(m.toJson(),description);
         $('#sendmessage').html(encoded);
         $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+escape(encoded));
