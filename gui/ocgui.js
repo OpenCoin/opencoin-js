@@ -236,6 +236,7 @@ $(function(e,data) {
                 response = wallet.responseSendCoins(message);
                 $('#receivemessage').val('');
                 var encoded = wallet.armor(response.toJson(),'A receipt for '+wallet.currencyName());
+                $('#receivedamount').html(wallet.sumCoins(message.coins)/cdd.currency_divisor);
                 $('#receipt').html(encoded);
                 $('#receiveresult a.email').attr('href','mailto:?subject=Your receipt&body='+escape(encoded));
             });
