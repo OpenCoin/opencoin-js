@@ -693,4 +693,31 @@ oc.layer = function opencoin_layer(api,storage) {
         return this.api.getKeyId(key);
     }
 
+    this.armor = function armor(text,description) {
+        if (description==undefined) description = 'An armored opencoin message';
+        var out = '======BEGIN OPENCOIN MESSAGE BLOCK=====';
+        out += '\n';
+        out += description+'\n\n';
+        var encoded = btoa(text);
+        for (i=0; i<encoded.length;i++) {
+            out += encoded[i];
+            if ((i+1) % 72 == 0) out+='\n';
+        }
+        out += '\n';
+        out += '======END OPENCOIN MESSAGE BLOCK=====';
+        return out;
+    }
+
+    this.unarmor = function unarmor(block) {
+        var parts = block.trim().split('\n\n'); 
+        var re = /======BEGIN OPENCOIN MESSAGE BLOCK=====\n([\s\S]*)\n\n([\s\S]*)\n======END OPENCOIN MESSAGE BLOCK=====/;
+        var m = block.match(re);
+        if (m) {
+            var encoded = m[2];
+            return atob(encoded.replace(/\n/gm,''));
+        } else {
+            return block;
+        } 
+    }
+
 }

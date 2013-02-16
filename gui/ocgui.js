@@ -200,8 +200,9 @@ $(function(e,data) {
         var auth_info = $('#send input[name="subject"]').val();
         m = wallet.requestSendCoins(amount,auth_info);
         storeDB();
-        $('#sendmessage').html(m.toJson());
-        $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+encodeURI(JSON.stringify(m.toData())));
+        var encoded = wallet.armor(m.toJson(),'Some opencoins');
+        $('#sendmessage').html(encoded);
+        $('#sendresult a.email').attr('href','mailto:?subject=Some '+wallet.currencyName()+' for you&body='+escape(encoded));
     });
 
 
@@ -220,7 +221,7 @@ $(function(e,data) {
 
     $('#receive .confirm').on('click',function(e,data) {
         var data = $('#receivemessage').val();
-        console.log(data);
+        data = wallet.unarmor(data);
         var parsed = JSON.parse(data);
         var message = wallet.parseData(parsed); 
         var cdd = wallet.getCurrentCDDC().cdd;
@@ -233,8 +234,9 @@ $(function(e,data) {
                 $.mobile.changePage('#receiveresult');
                 response = wallet.responseSendCoins(message);
                 $('#receivemessage').val('');
-                $('#receipt').html(response.toJson());
-                $('#receiveresult a.email').attr('href','mailto:?subject=Your receipt&body='+JSON.stringify(response.toData()));
+                var encoded = wallet.armor(response.toJson(),'A receipt');
+                $('#receipt').html(encoded);
+                $('#receiveresult a.email').attr('href','mailto:?subject=Your receipt&body='+escape(encoded));
             });
         });
     });
@@ -243,6 +245,7 @@ $(function(e,data) {
     $('#processreceipt .confirm').on('click',function(e,data) {
         var area = $('#receivedreceipt');
         var data = area.val();
+        data = wallet.unarmor(data);
         var parsed = JSON.parse(data);
         var message = wallet.parseData(parsed);
         wallet.callHandler(message);

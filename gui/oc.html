@@ -188,12 +188,12 @@
 
 	<div data-role="content">
         Send message created. Please transfer this to the recipient
-        <textarea name="message" id="sendmessage" data-role="none" rows='10' style='width:100%'>
+        <textarea name="message" id="sendmessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>
         some crazy json
         </textarea>
             <a href="mailto:?subject=Some greens for you&body=some crazy json" data-role='button' data-inline='true' class='email'>Email</a>
-        <a href="data:text/opencoin;base64,abc" download='send.ocn' data-role='button' data-inline='true'>Copy</a>
-        <a href='#currency' data-role='button' data-icon='check' data-inline='true'>Done</a>
+        <a href='#processreceipt' data-role='button' xdata-icon='check' data-inline='true'>Process receipt</a>
+        <a href='#currency' data-role='button' xdata-icon='check' data-inline='true'>Done</a>
 	</div>
 </div>
 
@@ -206,7 +206,7 @@
 
 	<div data-role="content">
         Enter the message you received.
-        <textarea name="message" id="receivemessage" data-role="none" rows='10' style='width:100%' autocomplete="off"></textarea>
+        <textarea name="message" id="receivemessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace' autocomplete="off"></textarea>
         <a href='#info' data-rel='dialog' data-role='button' class='confirm'>Receive</a>
 	</div>
 </div>
@@ -221,7 +221,7 @@
 	<div data-role="content">
        <div>Received <span id='receivedamount'>123</span> <span class='currencyname'>opencoin</span><br/>
        Please transfer the following receipt to the sender</div>
-        <textarea name="message" id="receipt" data-role="none" rows='10' style='width:100%'>
+        <textarea name="message" id="receipt" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>
         some crazy json
         </textarea>
             <a href="mailto:?subject=Some greens for you&body=some crazy json" data-role='button' data-inline='true' class='email'>Email</a>
@@ -238,7 +238,7 @@
 
 	<div data-role="content">
         Enter the receipt you received.
-        <textarea name="message" id="receivedreceipt" data-role="none" rows='10' style='width:100%' autocomplete="off"></textarea>
+        <textarea name="message" id="receivedreceipt" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace' autocomplete="off"></textarea>
         <a href='#alert' data-role='button' class='confirm'>Process receipt</a>
 	</div>
 </div>
