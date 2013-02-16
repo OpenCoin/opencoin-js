@@ -5,7 +5,8 @@ function interact(url,message,guihandler,print) {
     if (print) console.log(message);
     if (guihandler == undefined) guihandler = wallet.callHandler;
     $.post(url,message.toJson(),function(data) {
-        var parsed = JSON.parse(data);
+        if (typeof data == 'string') parsed = JSON.parse(data);
+        else parsed = data;
         var reply = wallet.parseData(parsed);
         //var out = wallet.callHandler(reply);
         guihandler(reply);
