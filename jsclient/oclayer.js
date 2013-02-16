@@ -165,6 +165,7 @@ oc.layer = function opencoin_layer(api,storage) {
 
 
     this.getCurrentCDDC = function () {
+        //alert(arguments.callee.caller.toString());
         var keys = Object.keys(this.storage.cddcs);
         keys.sort();
         var highest = keys[keys.length-1];
@@ -682,11 +683,12 @@ oc.layer = function opencoin_layer(api,storage) {
         return sum;
     }
   
-    this.currencyName = function() {
+    this.currencyName = function currencyName() {
+        //alert(arguments.callee.caller.toString());
         return this.getCurrentCDDC().cdd.currency_name;    
     }
 
-    this.currencyId = function() {
+    this.currencyId = function currencyId() {
         key = this.getCurrentCDDC().cdd.issuer_public_master_key;       
         return this.api.getKeyId(key);
     }

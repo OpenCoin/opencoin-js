@@ -85,8 +85,8 @@ $(function(e,data) {
             wallet.callHandler(r);   
             var cdd_cid = wallet.currencyId();
             database[cdd_cid]=wallet.storage;
-            makeCurrencyList();
-            $.mobile.changePage('#currencies');
+            $.mobile.changePage('#currency');
+            //makeCurrencyList();
         }); 
         return false;
     });
@@ -105,7 +105,6 @@ $(function(e,data) {
    
     $('#deletecurrency a.confirm').on('click',function(e,data){
         var cid = wallet.currencyId()
-        console.log(cid);
         delete database[cid];
         storeDB();
         wallet.setActiveStorage({});
@@ -267,8 +266,7 @@ function cdd_mk_interaction (interaction) {
         });
     });
 }
-    
-
+   
 $('#currencies').live('pageshow',function (e,data) {
     makeCurrencyList();
 });
@@ -356,24 +354,6 @@ $('#mkcs').live('pageshow', function(e,data) {
 });
 
 
-
-$(document).bind('pagebeforechange',function(e,data){
-    if (typeof data.toPage !== 'string') return;
-    var parsed = $.mobile.path.parseUrl(data.toPage);
-    if (parsed.hash != "" && ['#currencies','#addcurrency'].indexOf(parsed.hash) === -1 && wallet.storage == undefined) {
-        if (1 && Object.keys(database).length) { //for development, turn off in real life
-            wallet.setActiveStorage(database[Object.keys(database)[0]]);
-            return true;
-        } else {
-            e.preventDefault();
-            document.location.href=parsed.pathname;
-            console.log('redirect');
-            return false;
-        }
-     }
-});
-
-
 $('#messages').live('pageshow', function(e,data) {
     var page = $('#messages');
     var clist = $('#messages #messagelist');
@@ -381,7 +361,6 @@ $('#messages').live('pageshow', function(e,data) {
     var cddc = wallet.getCurrentCDDC();
 
     for (name in wallet.mq) {
-        console.log(name);
         if (name=='next_id') continue;
         var message = wallet.mq[name];
         clist.append("<li><a href='#message' messageid='"+name+"'>Message "+name+": "+message.type+"</a></li>");
@@ -397,18 +376,96 @@ $('#messages').live('pageshow', function(e,data) {
 });
 
 
-$(document).live('pageshow',function(e,data) {
+$(document).bind('pagebeforechange',function(e,data){
+    return
+    //even though this code is not called, I leave it in for the moment 
+    //because I need it as a place to copy from
+    console.log('beforechange');
+    if (wallet.storage == undefined || Object.keys(wallet.storage).length==0) {
+        if (Object.keys(database).length) {
+            wallet.setActiveStorage(database[Object.keys(database)[0]]);
+            return true;
+        } else {
+            if (typeof data.toPage !== 'string') {
+                $.mobile.changePage('#addcurrency');
+                console.log('nostring');
+                return true;
+            }
+            console.log('have '+data.toPage);
+            var parsed = $.mobile.path.parseUrl(data.toPage);
+            console.log(parsed);
+            if (parsed.hash == ""|| ['#addcurrency'].indexOf(parsed.hash)===-1) {
+                console.log('change to addcurrency');
+                $.mobile.changePage('#addcurrency');
+                return false;
+            } else {
+                console.log('how did we end here?');    
+                return false;
+            }
+            return false;
+        }
+    }
+
+    if (typeof data.toPage !== 'string') return;
+    var parsed = $.mobile.path.parseUrl(data.toPage);
+    //if (parsed.hash != "" && ['#currencies','#addcurrency'].indexOf(parsed.hash) === -1 && wallet.storage == undefined) {
+    if (wallet.storage == undefined) {        
+        if (1 && Object.keys(database).length) { //for development, turn off in real life
+            wallet.setActiveStorage(database[Object.keys(database)[0]]);
+            return true;
+        } else {
+            e.preventDefault();
+            document.location.href=parsed.pathname;
+            console.log('redirect');
+            return false;
+        }
+     }
+});
+
+
+$(document).live('pagebeforeshow',function(e,data){
     var page = $.mobile.activePage;
+    var pageid = page.attr('id');
+    //console.log('pageid: '+pageid);
+    if (wallet.storage==undefined || Object.keys(wallet.storage).length==0) {
+        if (Object.keys(database).length!=0) {
+            //console.log('setting first currency');
+            wallet.setActiveStorage(database[Object.keys(database)[0]]);
+        } else {
+            //console.log('no currency defined'); 
+            if (['addcurrency','addingcurrency'].indexOf(pageid) === -1) {
+                //console.log('redirecting to addcurrency');
+                /*
+                console.log(page);
+                var parsed = $.mobile.path.parseUrl(document.location.href);
+                var target = parsed.hrefNoHash+'#addcurrency';
+                console.log(target);
+                e.preventDefault();
+                document.location.href=target;
+                */
+                $.mobile.changePage('#addcurrency');
+                return false;
+            } 
+            return;
+        }
+    };
+});
+
+$(document).live('pageshow',function(e,data) {
+    if (wallet.storage==undefined || Object.keys(wallet.storage).length==0) return;
+    
+    var page = $.mobile.activePage;
+    
     page.find('.currencyname').each(function(i,v) {
         $(v).text(wallet.currencyName.call(wallet));
     });
+    
     page.find('.currencysum').each(function(i,v) {
         $(v).text(wallet.sumStoredCoins.call(wallet)/wallet.getCurrentCDDC().cdd.currency_divisor);
     });
+    
     page.find('.currencyid').each(function(i,v) {
-
         $(v).text(quads(wallet.currencyId.call(wallet)));
-        //$(v).text(wallet.currencyId.call(wallet).substr(0,20)+'...');
     });
 });
 

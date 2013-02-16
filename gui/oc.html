@@ -44,8 +44,37 @@
 </head> 
 <body data-theme="b"> 
 
+<div data-role="page" id="currency"  data-add-back-btn="false" data-theme='b'>
+    <div data-role="header" data-position="fixed">
+		<h1 class='currencyname'>opencoin</h1>
+	</div>
+
+	<div data-role="content">
+        <h3>You have <span class='currencysum'>217.03</span> <span class='currencyname'>opencoin</span><br>
+        <span style="font-size:small; font-weight:normal" class='currencyid'>abcdef12341234efab</span><h3>
+        
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#send">Send</a></li>
+            <li><a href="#receive">Receive</a></li>
+            <li><a href="#info" data-rel='dialog' id='getchange'>Get change</a></li>
+            <li><a href="#processreceipt">Process receipt</a></li>
+        </ul>
+        
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#withdraw">Withdraw</a></li>
+            <li><a href="#deposit">Deposit</a></li>
+        </ul>
+    </div>
+	
+    <div data-role="footer" xclass="ui-bar" data-position="fixed">
+        <a href="#currencies" data-role="button">change currency</a>
+        <a href="#more" data-role="button" data-icon="grid" style="float:right">advanced</a>
+	</div>
+</div>
+
 <div data-role="page" id="currencies"  data-theme='b' xdata-add-back-btn="true">
 	<div data-role="header" data-position="fixed">
+        <!--<a href="#currency" data-icon="home" data-iconpos="notext">Home</a>-->
 		<h1>opencoin</h1>
 	</div>
 
@@ -106,34 +135,6 @@
 	</div>
 </div>
 
-
-<div data-role="page" id="currency"  data-add-back-btn="true" data-theme='b'>
-    <div data-role="header" data-position="fixed">
-        <a href="#currencies" data-icon="home" data-iconpos="notext">Home</a>
-		<h1 class='currencyname'>opencoin</h1>
-	</div>
-
-	<div data-role="content">
-        <h3>You have <span class='currencysum'>217.03</span> <span class='currencyname'>opencoin</span><br>
-        <span style="font-size:small; font-weight:normal" class='currencyid'>abcdef12341234efab</span><h3>
-        
-        <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#send">Send</a></li>
-            <li><a href="#receive">Receive</a></li>
-            <li><a href="#info" data-rel='dialog' id='getchange'>Get change</a></li>
-            <li><a href="#processreceipt">Process receipt</a></li>
-        </ul>
-        
-        <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#withdraw">Withdraw</a></li>
-            <li><a href="#deposit">Deposit</a></li>
-        </ul>
-    </div>
-	
-    <div data-role="footer" xclass="ui-bar" data-position="fixed">
-        <a href="#more" data-role="button" data-icon="grid" style="float:right">advanced</a>
-	</div>
-</div>
 
 
 <div data-role="page" id="withdraw" data-theme="b" data-add-back-btn="true">
@@ -468,7 +469,7 @@
 		<h1>Delete currency <span class='currencyname'>Greenbuck</span>?</h1>
         You will lose <span class='currencysum'>217.03</span> <span class='currencyname'>opencoin</span> if you do this. Are you really, really sure? Like, absolutely sure?
 		<a href="#more" data-role="button" data-icon='back'>Be safe, go back</a>
-		<a href="#currencies" class='confirm' data-role="button" data-theme='c' data-icon='delete'>Ok, delete currency</a>
+		<a href="#currency" class='confirm' data-role="button" data-theme='c' data-icon='delete'>Ok, delete currency</a>
 	</div>
 </div>
 </body>
