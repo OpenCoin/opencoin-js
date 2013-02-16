@@ -235,7 +235,7 @@ $(function(e,data) {
                 $.mobile.changePage('#receiveresult');
                 response = wallet.responseSendCoins(message);
                 $('#receivemessage').val('');
-                var encoded = wallet.armor(response.toJson(),'A receipt');
+                var encoded = wallet.armor(response.toJson(),'A receipt for '+wallet.currencyName());
                 $('#receipt').html(encoded);
                 $('#receiveresult a.email').attr('href','mailto:?subject=Your receipt&body='+escape(encoded));
             });
@@ -252,7 +252,7 @@ $(function(e,data) {
         wallet.callHandler(message);
         storeDB();
         area.val('');
-        showAlert('Processed','The receipt is processed');
+        showAlert('Processed','Finished processing receipt');
         return false;
     });
 });
