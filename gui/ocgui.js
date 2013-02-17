@@ -31,6 +31,9 @@ function showAlert(header,text,target) {
     $.mobile.changePage('#alert',{'role':'dialog'});
     $('#alertheader').html(header);
     $('#alerttext').html(text);
+    if (target != undefined) {
+    $('#alert .ok').attr('href',target);
+    }
 }
 
 function pr(obj) {
@@ -207,7 +210,7 @@ $(function(e,data) {
     });
 
 
-    $("#sendmessage, #receipt").focus(function() {
+    $("#sendmessage, #receipt,#exportmessage").focus(function() {
         var $this = $(this);
         $this.select();
 
@@ -255,6 +258,29 @@ $(function(e,data) {
         area.val('');
         showAlert('Processed','Finished processing receipt');
         return false;
+    });
+    
+    $('#import .import').on('click',function(e,data) {
+        var data = $('#importmessage').val();
+        data = wallet.unarmor('DATABASE',data);
+        var key =  'OPENCOINWALLET--';
+        if (data.length && data.indexOf(key)==0) {
+            try {
+                data = data.slice(key.length);
+                var parsed = JSON.parse(data);
+                database = parsed;
+                storeDB();
+                showAlert('Database imported','Successfully imported the database.','#advanced');
+                return false;
+
+            } catch (e) {
+                showAlert('Could not import','Data found, but wrong format. No changes applied.','#advanced');
+                return false;
+            }
+        } else {
+            showAlert('No data found','We could not find valid data. No changes applied','#advanced');
+            return false;
+        }
     });
 });
 
@@ -381,6 +407,12 @@ $('#messages').live('pageshow', function(e,data) {
     clist.listview('refresh');
 });
 
+
+$('#export').live('pageshow',function (e,data) {
+    var dbstring = 'OPENCOINWALLET--'+serializeDB();
+    var encoded = wallet.armor('DATABASE', dbstring,'opencoin wallet database. Backup with care.');
+        $('#exportmessage').html(encoded);
+});
 
 $(document).bind('pagebeforechange',function(e,data){
     return
