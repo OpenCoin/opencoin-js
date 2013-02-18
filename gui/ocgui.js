@@ -270,15 +270,15 @@ $(function(e,data) {
                 var parsed = JSON.parse(data);
                 database = parsed;
                 storeDB();
-                showAlert('Database imported','Successfully imported the database.','#advanced');
+                showAlert('Database imported','Successfully imported the database.','#currencies');
                 return false;
 
             } catch (e) {
-                showAlert('Could not import','Data found, but wrong format. No changes applied.','#advanced');
+                showAlert('Could not import','Data found, but wrong format. No changes applied.','#import');
                 return false;
             }
         } else {
-            showAlert('No data found','We could not find valid data. No changes applied','#advanced');
+            showAlert('No data found','We could not find valid data. No changes applied','#import');
             return false;
         }
     });

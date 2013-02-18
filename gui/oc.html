@@ -67,7 +67,7 @@
     </div>
 	
     <div data-role="footer" xclass="ui-bar" data-position="fixed">
-        <a href="#currencies" data-role="button">change currency</a>
+        <a href="#currencies" data-role="button">currencies</a>
         <a href="#advanced" data-role="button" data-icon="grid" style="float:right">advanced</a>
 	</div>
 </div>
@@ -93,8 +93,25 @@
     </div>
 
        <div data-role="footer" data-position="fixed">   
+        <a href="#settings" data-role="button" data-icon='grid'>settings</a>
         <a href='#addcurrency' data-role='button' data-icon='plus' style="float:right">add currency</a>
     </div>
+</div>
+
+<div data-role="page" id="settings" data-theme="b">
+	<div data-role="header" data-position="fixed">
+        <a href='#currencies' data-icon='back'>back</a>
+		<h1>Settings</h1>
+	</div>
+
+	<div data-role="content">
+          <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#export" xdata-icon='info'>Export complete database</a></li>
+            <li><a href="#import" xdata-icon='info'>Import complete database</a></li>
+        </ul>
+
+
+	</div>
 </div>
 
 <div data-role="page" id="addcurrency" data-theme="b">
@@ -138,21 +155,21 @@
 
 <div data-role="page" id="export" data-theme="b">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
+        <a href='#settings' data-icon='back'>back</a>
 		<h1>Export database</h1>
 	</div>
 
 	<div data-role="content">
         Please store the database block below somewhere safe.
         <textarea name="exportmessage" id="exportmessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>the export data</textarea>
-        <a href='#advanced' data-role='button' xdata-icon='check' data-inline='true'>Done</a>
+        <a href='#settings' data-role='button' xdata-icon='check' data-inline='true'>Done</a>
 	</div>
 </div>
 
 
 <div data-role="page" id="import" data-theme="b">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
+        <a href='#settings' data-icon='back'>back</a>
 		<h1>Import database</h1>
 	</div>
 
@@ -160,8 +177,8 @@
         <strong>Importing the database will delete the current database. You will lose all your current settings and coins.</strong><br/>
         Paste the database block below.
         <textarea name="importmessage" id="importmessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace' autocomplete="off"></textarea>
-        <a href="#advanced" data-role="button" data-inline='true' data-icon='alert'>Cancel</a>
-        <a href='#advanced' data-role='button' class='import' data-icon='check' data-inline='true'>Import</a>
+        <a href="#settings" data-role="button" data-inline='true' data-icon='alert'>Cancel</a>
+        <a href='#settings' data-role='button' class='import' data-icon='check' data-inline='true'>Import</a>
 	</div>
 </div>
 
@@ -346,12 +363,7 @@
             <li><a href="#deletecurrency" data-icon='info'>Delete <span class='currencyname'>currency</span></a></li>
         </ul>
         
-        <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#export" xdata-icon='info'>Export complete database</a></li>
-            <li><a href="#import" xdata-icon='info'>Import complete database</a></li>
-        </ul>
-
-
+      
     </div>
 </div>
 
