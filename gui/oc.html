@@ -93,8 +93,7 @@
     </div>
 
        <div data-role="footer" data-position="fixed">   
-        <a href="#settings" data-role="button" data-icon='grid'>settings</a>
-        <a href='#addcurrency' data-role='button' data-icon='plus' style="float:right">add currency</a>
+        <a href='#settings' data-role='button' data-icon='grid' style="float:right">settings</a>
     </div>
 </div>
 
@@ -105,6 +104,10 @@
 	</div>
 
 	<div data-role="content">
+        <ul data-role="listview" data-inset="true" data-filter="false">
+            <li><a href="#addcurrency" data-icon='plus'>Add currency</a></li>
+        </ul>
+
           <ul data-role="listview" data-inset="true" data-filter="false">
             <li><a href="#export" xdata-icon='info'>Export complete database</a></li>
             <li><a href="#import" xdata-icon='info'>Import complete database</a></li>
@@ -116,7 +119,7 @@
 
 <div data-role="page" id="addcurrency" data-theme="b">
 	<div data-role="header" data-position="fixed">
-        <a href='#currencies' data-icon='back'>back</a>
+        <a href='#settings' data-icon='back'>back</a>
 		<h1>Add Currency</h1>
 	</div>
 
