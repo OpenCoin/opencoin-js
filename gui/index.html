@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html> 
 	<head> 
-	<title>opencoin</title> 
+	<title>OpenCoin</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 
 	<link rel="stylesheet" href="jquery.mobile-1.4.0.min.css" />
@@ -44,63 +44,58 @@
 </head> 
 <body> 
 
-<div data-role="page" id="currency"  data-add-back-btn="false">
+<div data-role="page" id="currency" data-add-back-btn="false">
     <div data-role="header" data-position="fixed">
-		<h1 class='currencyname'>opencoin</h1>
-		<a href='#currencies' data-icon='back'>back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
+		<a href="#currencies" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
 	</div>
 
 	<div data-role="content">
-        <h3>You have <span class='currencysum'>217.03</span> <span class='currencyname'>opencoin</span><br>
-        <span style="font-size:small; font-weight:normal" class='currencyid'>abcdef12341234efab</span><h3>
+        <h3>Your have <span class='currencysum'>0</span> <span class='currencyname'>OpenCoin</span></h3>
+<!--         <span style="font-size:small; font-weight:normal" class='currencyid'>abcdef12341234efab</span><h3> -->
         
-        <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#send">Send</a></li>
-            <li><a href="#receive">Receive</a></li>
-            <li><a href="#info" data-rel='dialog' id='getchange'>Get change</a></li>
-            <li><a href="#processreceipt">Process receipt</a></li>
-        </ul>
-        
-        <ul data-role="listview" data-inset="true" data-filter="false">
-            <li><a href="#withdraw">Withdraw</a></li>
-            <li><a href="#deposit">Deposit</a></li>
-        </ul>
+        <div class="ui-grid-a">
+	        <div class="ui-block-a"><a href="#send" class="ui-btn ui-icon-mail ui-btn-icon-top ui-btn-b">Send</a></div>
+	        <div class="ui-block-b"><a href="#receive" class="ui-btn ui-icon-shop ui-btn-icon-top ui-btn-b">Receive</a></div>
+	    </div>
+	    <div class="ui-grid-a">
+	        <div class="ui-block-a"><a href="#info" class="ui-btn ui-icon-recycle ui-btn-icon-top ui-btn-b" data-rel='dialog' id='getchange'>Get change</a></div>
+	        <div class="ui-block-b"><a href="#processreceipt" class="ui-btn ui-icon-tag ui-btn-icon-top ui-btn-b">Receipt</a></div>
+	    </div>
+		<div class="ui-grid-a">
+	        <div class="ui-block-a"><a href="#withdraw" class="ui-btn ui-icon-arrow-d ui-btn-icon-top ui-btn-b">Withdraw</a></div>
+	        <div class="ui-block-b"><a href="#deposit" class="ui-btn ui-icon-arrow-u ui-btn-icon-top ui-btn-b">Deposit</a></div>
+	    </div>
     </div>
 	
     <div data-role="footer" xclass="ui-bar" data-position="fixed">
-        <a href="#currencies" data-role="button">currencies</a>
-        <a href="#advanced" data-role="button" data-icon="grid" style="float:right">advanced</a>
+        <a href="#currencies" class="ui-btn ui-btn-icon-left ui-icon-home">Currencies</a>
+        <a href="#advanced" class="ui-btn ui-btn-icon-right ui-icon-grid" style="float:right">Advanced</a>
 	</div>
 </div>
 
 <div data-role="page" id="currencies"  xdata-add-back-btn="true">
 	<div data-role="header" data-position="fixed">
-        <!--<a href="#currency" data-icon="home" data-iconpos="notext">Home</a>-->
-		<h1>opencoin</h1>
+		<h1>OpenCoin JS Client</h1>
 	</div>
 
     <div data-role="content">
         <ul data-role='listview' data-inset='true' id='currencylist'>
             <li><a href='#currency'><h3>
-                opencoin</h3>
-                <p>You have <strong>217.03</strong></p>
-                </a></li>
-            <li><a href='#currency'><h3>JanGulden</h3>
-                <p>You have <strong>91.07</strong></p>
+                OpenCoin</h3>
+                <p>You have <strong>0</strong></p>
                 </a></li>
         </ul>
-        
-    
     </div>
 
-       <div data-role="footer" data-position="fixed">   
-        <a href='#settings' data-role='button' data-icon='grid' xstyle="float:right">settings</a>
+	<div data-role="footer" data-position="fixed">   
+        <a href="#settings" class="ui-btn ui-btn-icon-right ui-icon-gear" style="float:right">Settings</a>
     </div>
 </div>
 
 <div data-role="page" id="settings">
 	<div data-role="header" data-position="fixed">
-        <a href='#currencies' data-icon='back'>back</a>
+        <a href="#currencies" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
 		<h1>Settings</h1>
 	</div>
 
@@ -118,23 +113,19 @@
 
 <div data-role="page" id="addcurrency">
 	<div data-role="header" data-position="fixed">
-        <a href='#settings' data-icon='back'>back</a>
+        <a href="#settings" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
 		<h1>Add Currency</h1>
 	</div>
-
 	<div data-role="content">
-        
         <form>
             <div>
-                Please enter the url of the currency<br/>
-                <input name="url" id="url" value="http://issuer.blindcoin.org/" type='url'/>
+                <p>Please enter the URL of the currency:</p>
+                <input name="url" id="url" value="http://opencoin-demo.deb7.dotplex.me:6789/" type="url" />
             </div>
-            
-            <input id='do-addcurrency'  type='submit' value='Add currency'/>
+            <input id="do-addcurrency" type="submit" value="Add currency" />
         </form>
 	</div>
 </div>
-
 
 <div data-role="dialog" id="addingcurrency">
 	<div data-role="header" data-position="fixed">
@@ -157,7 +148,7 @@
 
 <div data-role="page" id="export">
 	<div data-role="header" data-position="fixed">
-        <a href='#settings' data-icon='back'>back</a>
+        <a href="#settings" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
 		<h1>Export database</h1>
 	</div>
 
@@ -171,7 +162,7 @@
 
 <div data-role="page" id="import">
 	<div data-role="header" data-position="fixed">
-        <a href='#settings' data-icon='back'>back</a>
+        <a href="#settings" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
 		<h1>Import database</h1>
 	</div>
 
@@ -188,11 +179,11 @@
 <div data-role="page" id="withdraw"  data-add-back-btn="true">
 
 	<div data-role="header" data-position="fixed">
-        <a href='#currency' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 	<div data-role="content">
-    Enter the amount you want to withdraw, and the subject as required by the issuer.
+    <p>Enter the amount you want to withdraw, and the subject as required by the issuer.</p>
       <form> 
         <div data-role='fieldcontain'>
             <label for="amount">Amount</label>
@@ -202,20 +193,20 @@
             <label for="subject">Subject</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
-		<a href="#info" data-rel='dialog' data-role="button" class='confirm'>Withdraw</a>
+		<a href="#info" data-rel='dialog' class="ui-btn ui-icon-arrow-d ui-btn-icon-left ui-btn-inline">Withdraw</a>
       </form>
 	</div>
 </div>
 
 <div data-role="page" id="send" >
 	<div data-role="header" data-position="fixed">
-        <a href='#currency' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
       <form>
-        Enter the amount you want to send, and an optional subject.
+        <p>Enter the amount you want to send, and an optional subject.</p>
         <div data-role='fieldcontain'>
             <label for="amount">Amount</label>
             <input name="amount" id="amount" value="" type='number'/>
@@ -224,7 +215,7 @@
             <label for="subject">Subject</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
-		<a href="#sendresult" xdata-rel='dialog' data-role="button" class='confirm'>Send</a>
+		<a href="#sendresult" xdata-rel='dialog' class="ui-btn ui-icon-mail ui-btn-icon-left ui-btn-inline">Send</a>
         </form>
 	</div>
 </div>
@@ -232,42 +223,40 @@
 
 <div data-role="page" id="sendresult" >
 	<div data-role="header" data-position="fixed">
-		<h1 class='currencyname'>opencoin</h1>
+		<a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
-        Send message created. Please transfer this to the recipient
-        <textarea name="message" id="sendmessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>
-        some crazy json
-        </textarea>
-            <a href="mailto:?subject=Some greens for you&body=some crazy json" data-role='button' data-inline='true' class='email'>Email</a>
-        <a href='#processreceipt' data-role='button' xdata-icon='check' data-inline='true'>Process receipt</a>
-        <a href='#currency' data-role='button' xdata-icon='check' data-inline='true'>Done</a>
+        <p>Your message has been created.</p>
+        <textarea name="message" id="sendmessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>No message available</textarea>
+        <button class="ui-btn ui-btn-inline">Send to user</button>
+        <a href="mailto:?subject=Some greens for you&body=some crazy json" class="ui-btn ui-btn-inline" data-inline="true">Send via E-Mail</a>
 	</div>
 </div>
 
 
 <div data-role="page" id="receive" >
 	<div data-role="header" data-position="fixed">
-        <a href='#currency' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
-        Enter the message block you received (including the "---" lines).
+        <p>Enter the message block you received.</p>
         <textarea name="message" id="receivemessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace' autocomplete="off"></textarea>
-        <a href='#info' data-rel='dialog' data-role='button' class='confirm'>Receive</a>
+        <a href='#info' data-rel='dialog' data-role='button' class="ui-btn ui-icon-shop ui-btn-icon-left ui-btn-inline">Receive</a>
 	</div>
 </div>
 
 
 <div data-role="page" id="receiveresult" >
 	<div data-role="header" data-position="fixed">
-		<h1 class='currencyname'>opencoin</h1>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
-       <div>Received <span id='receivedamount'>123</span> <span class='currencyname'>opencoin</span><br/>
+       <div>Received <span id='receivedamount'>123</span> <span class='currencyname'>OpenCoin</span><br/>
        Please transfer the following receipt to the sender</div>
         <textarea name="message" id="receipt" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>
         some crazy json
@@ -280,26 +269,26 @@
 
 <div data-role="page" id="processreceipt" >
 	<div data-role="header" data-position="fixed">
-        <a href='#currency' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
-        Enter the message block you received (including the "---" lines).
+        <p>Enter the message block you received.</p>
         <textarea name="message" id="receivedreceipt" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace' autocomplete="off"></textarea>
-        <a href='#alert' data-role='button' class='confirm'>Process receipt</a>
+        <a href='#alert' class="ui-btn ui-icon-tag ui-btn-icon-left ui-btn-inline">Process receipt</a>
 	</div>
 </div>
 
 <div data-role="page" id="deposit" >
 	<div data-role="header" data-position="fixed">
-        <a href='#currency' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
       <form>
-        Enter the amount you want to deposit, and an optional subject.
+        <p>Enter the amount you want to deposit, and an optional subject.</p>
         <div data-role='fieldcontain'>
             <label for="amount">Amount</label>
             <input name="amount" id="amount" value="" type='number'/>
@@ -308,7 +297,7 @@
             <label for="subject">Subject</label>
             <input type="text" name="subject" id="subject" value="" />
         </div>
-		<a  href="#info" data-rel='dialog' data-role="button" class='confirm'>Deposit</a>
+		<a href="#info" data-rel='dialog' class="ui-btn ui-icon-arrow-u ui-btn-icon-left ui-btn-inline">Deposit</a>
         </form>
 	</div>
 </div>
@@ -349,8 +338,8 @@
 
 <div data-role="page" id="advanced" >
     <div data-role="header" data-position="fixed">
-        <a href='#currency' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#currency" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -372,8 +361,8 @@
 
 <div data-role="page" id="coins">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#advanced" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -393,8 +382,8 @@
 
 <div data-role="page" id="coin">
 	<div data-role="header" data-position="fixed">
-        <a href='#coins' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#coins" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -408,8 +397,8 @@
 
 <div data-role="page" id="cddcs">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#advanced" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -429,8 +418,8 @@
 
 <div data-role="page" id="cddc">
 	<div data-role="header" data-position="fixed">
-        <a href='#cddcs' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#cddcs" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -443,8 +432,8 @@
 
 <div data-role="page" id="mkcs">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#advanced" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -462,8 +451,8 @@
 
 <div data-role="page" id="mkc">
 	<div data-role="header" data-position="fixed">
-        <a href='#mkcs' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#mkcs" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -477,8 +466,8 @@
 
 <div data-role="page" id="messages">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#advanced" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -492,8 +481,8 @@
 
 <div data-role="page" id="message">
 	<div data-role="header" data-position="fixed">
-        <a href='#messages' data-icon='back'>back</a>
-		<h1 class='currencyname'>opencoin</h1>
+        <a href="#messages" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
 	</div>
 
 	<div data-role="content">
@@ -510,13 +499,13 @@
 
 <div data-role="page" id="deletecurrency">
 	<div data-role="header" data-position="fixed">
-        <a href='#advanced' data-icon='back'>back</a>
+        <a href="#advanced" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
 		<h1>Delete currency?</h1>
 	</div>
 
 	<div data-role="content">
 		<h1>Delete currency <span class='currencyname'>Greenbuck</span>?</h1>
-        You will lose <span class='currencysum'>217.03</span> <span class='currencyname'>opencoin</span> if you do this. Are you really, really sure? Like, absolutely sure?
+        You will lose <span class='currencysum'>217.03</span> <span class='currencyname'>OpenCoin</span> if you do this. Are you really, really sure? Like, absolutely sure?
 		<a href="#advanced" data-role="button" data-icon='back'>Be safe, go back</a>
 		<a href="#currency" class='confirm' data-role="button" data-theme='c' data-icon='delete'>Ok, delete currency</a>
 	</div>
