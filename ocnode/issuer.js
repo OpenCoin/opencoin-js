@@ -45,9 +45,9 @@ function setupServer() {
     params = {};
     params.cdd_location = 'http://localhost:6789/';
     params.cdd_serial = 1;
-    params.cdd_signing_date = new Date("2012-12-30T11:46:00");
-    params.cdd_expiry_date = new Date("2014-12-31T23:59:59");
-    params.currency_name = 'TestTaler';
+    params.cdd_signing_date = new Date("2014-02-09T13:37:00");
+    params.cdd_expiry_date = new Date("2015-12-31T23:59:59");
+    params.currency_name = 'OpenCoin';
     params.currency_divisor = 100;
     params.validation_service = [[10,'http://localhost:6789']];
     params.info_service =  [[10,'http://localhost:6789']];
@@ -63,9 +63,9 @@ function setupServer() {
         var denomination = cddc.cdd.denominations[i];
         params = {};
         params.denomination = denomination;
-        params.notBefore = new Date("2013-01-01");
-        params.notAfter = new Date("2013-06-30");
-        params.coins_expiry_date = new Date('2013-12-31');
+        params.notBefore = new Date("2014-01-01");
+        params.notAfter = new Date("2015-06-30");
+        params.coins_expiry_date = new Date('2015-12-31');
         mkout = api.makeMKC(issuer_private,cddc,params);
         mkc = mkout.mkc;
         private_mintkey = mkout.private_mintkey;
