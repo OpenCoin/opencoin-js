@@ -103,9 +103,6 @@ $(function(e,data) {
         delete wallet.mq[i];
         page.removeData('r');
      });
-
-
-
    
     $('#deletecurrency a.confirm').on('click',function(e,data){
         var cid = wallet.currencyId()
@@ -117,7 +114,6 @@ $(function(e,data) {
     coinsound = document.createElement('audio');
     coinsound.setAttribute('src', 'coinsound.ogg');
   
-    
     $('#withdraw .confirm').on('click',function(e,data) {
         var amount = parseFloat($('#withdraw input[name="amount"]').val());
         if (isNaN(amount)) {
@@ -282,6 +278,13 @@ $(function(e,data) {
             return false;
         }
     });
+    
+    $('#user a').click(function(e) {
+    	e.preventDefault();
+		var username = $('#user input.username').value();
+		console.log(username);
+	});
+
 });
 
 function cdd_mk_interaction (interaction) {
@@ -505,6 +508,13 @@ $(document).live('pageshow',function(e,data) {
     page.find('.currencyid').each(function(i,v) {
         $(v).text(quads(wallet.currencyId.call(wallet)));
     });
+    
+    if (typeof username != 'undefined') {
+		page.find('.username').each(function(i,v) {
+    		$(v).text(username);
+	    });
+	}
+
 });
 
 

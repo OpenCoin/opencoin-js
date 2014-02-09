@@ -48,10 +48,11 @@
     <div data-role="header" data-position="fixed">
 		<h1 class='currencyname'>OpenCoin</h1>
 		<a href="#currencies" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<a href="#user" class="username ui-btn ui-btn-icon-right ui-icon-user">Login</a>
 	</div>
 
 	<div data-role="content">
-        <h3>Your have <span class='currencysum'>0</span> <span class='currencyname'>OpenCoin</span></h3>
+        <h3>You have <span class='currencysum'>0</span> <span class='currencyname'>OpenCoin</span></h3>
 <!--         <span style="font-size:small; font-weight:normal" class='currencyid'>abcdef12341234efab</span><h3> -->
         
         <div class="ui-grid-a">
@@ -508,6 +509,24 @@
         You will lose <span class='currencysum'>217.03</span> <span class='currencyname'>OpenCoin</span> if you do this. Are you really, really sure? Like, absolutely sure?
 		<a href="#advanced" data-role="button" data-icon='back'>Be safe, go back</a>
 		<a href="#currency" class='confirm' data-role="button" data-theme='c' data-icon='delete'>Ok, delete currency</a>
+	</div>
+</div>
+
+<div data-role="page" id="user">
+	<div data-role="header" data-position="fixed">
+        <a href='#currency' data-icon='back'>back</a>
+		<h1 class='currencyname'>opencoin</h1>
+	</div>
+
+	<div data-role="content">
+      <form>
+        Set the username with that you want to send and receive payments:
+        <div data-role='fieldcontain'>
+            <label for="username">Username</label>
+            <input name="username" class="username" value="" type="text" />
+        </div>
+		<a href="" class="confirm ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline">Save</a>
+        </form>
 	</div>
 </div>
 
