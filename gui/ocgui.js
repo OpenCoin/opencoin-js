@@ -52,7 +52,6 @@ function quads(text) {
 
 $(function(e,data) {
 
-
        $('#addcurrency form').on('submit',function(e,data) {
         wallet.setActiveStorage(wallet.newStorage());
         var cid = $('#addcurrency input[name=currencyid]').val();
@@ -279,10 +278,10 @@ $(function(e,data) {
         }
     });
     
-    $('#user a').click(function(e) {
+    $('#user form').submit(function(e) {
     	e.preventDefault();
-		var username = $('#user input.username').value();
-		console.log(username);
+		username = $('#user input.username').val();
+		$.mobile.changePage('#currency');
 	});
 
 });
