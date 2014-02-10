@@ -238,8 +238,26 @@
 	<div data-role="content">
         <p>Your message has been created.</p>
         <textarea name="message" id="sendmessage" data-role="none" rows='10' style='width:100%;font-size:small;font-family: monospace'>No message available</textarea>
-        <button class="ui-btn ui-btn-inline">Send to user</button>
-        <a href="mailto:?subject=Some greens for you&body=some crazy json" class="ui-btn ui-btn-inline" data-inline="true">Send via E-Mail</a>
+        <button class="sendtouser ui-btn ui-btn-inline ui-btn-icon-left ui-icon-user">Send to a user</button>
+        <a href="mailto:?subject=Some greens for you&body=some crazy json" class="ui-btn ui-btn-inline ui-btn-icon-left ui-icon-mail" data-inline="true">Send via E-Mail</a>
+	</div>
+</div>
+
+
+<div data-role="page" id="sendtouser" >
+	<div data-role="header" data-position="fixed">
+		<a href="#sendresult" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1 class='currencyname'>OpenCoin</h1>
+		<a href="#user" class="username ui-btn ui-btn-icon-right ui-icon-user">Login</a>
+	</div>
+
+	<div data-role="content">
+        <p>Enter the username of the recipient:</p>
+         <div data-role='fieldcontain'>
+            <label for="recipient">Username</label>
+            <input name="recipient" class="recipient" value="" type="text" />
+        </div>
+        <button class="confirm ui-btn ui-btn-inline ui-btn-icon-left ui-icon-check">Send</button>
 	</div>
 </div>
 
@@ -276,6 +294,21 @@
         <a href='#currency' data-role='button' data-icon='check' data-inline='true'>Done</a>
 	</div>
 </div>
+
+
+<div data-role="page" id="receivedfromuser" >
+	<div data-role="header" data-position="fixed">
+		<h1 class='currencyname'>OpenCoin</h1>
+		<a href="#user" class="username ui-btn ui-btn-icon-right ui-icon-user">Login</a>
+	</div>
+
+	<div data-role="content">
+		<h2>Congratulations!</h2>
+       <p>You have received <span class="amount">123</span> <span class='currencyname'>OpenCoin</span></p>
+        <a href='#currency' data-role='button' data-icon='check' data-inline='true'>Done</a>
+	</div>
+</div>
+
 
 <div data-role="page" id="processreceipt" >
 	<div data-role="header" data-position="fixed">

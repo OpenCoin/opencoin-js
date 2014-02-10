@@ -205,6 +205,27 @@ $(function(e,data) {
     });
 
 
+	$('#sendresult .sendtouser').click(function(e) {
+		$.mobile.changePage('#sendtouser');
+	});
+	
+	
+	$('#sendtouser .confirm').click(function(e) {
+		$.post('http://exchange.blindcoin.org/send.php', {
+				username: $('#sendtouser input.recipient').val(),
+				message: $('#sendmessage').html()
+			},
+			function(data) {
+				if (data == 'OK') {
+					showAlert('Success', 'Coins have been sent to the recipient.');
+				}
+				else {
+					showAlert('Error', 'Coins could not be sent.');
+				}
+			}).fail(function(){console.log('Sending to exchange server failed.')});
+	});
+	
+
     $("#sendmessage, #receipt,#exportmessage").focus(function() {
         var $this = $(this);
         $this.select();
@@ -415,6 +436,36 @@ $('#export').live('pageshow',function (e,data) {
     var encoded = wallet.armor('DATABASE', dbstring,'opencoin wallet database. Backup with care.');
         $('#exportmessage').html(encoded);
 });
+
+
+setInterval(function() {
+	if (typeof username != 'undefined') {
+		$.get('http://exchange.blindcoin.org/get.php', {
+				username: username
+			},
+			function(data) {
+				if (data != 'ERROR') {
+					data = wallet.unarmor('STACK',data);
+					var parsed = JSON.parse(data);
+					var message = wallet.parseData(parsed); 
+					var cdd = wallet.getCurrentCDDC().cdd;
+					var renewalurl = cdd.renewal_service[0][1];
+					cdd_mk_interaction(function(){
+						interact(renewalurl,wallet.requestRenewal(message.coins),function(r) {
+							wallet.callHandler(r);
+							coinsound.play();
+							storeDB();
+							$.mobile.changePage('#receivedfromuser');
+							response = wallet.responseSendCoins(message);
+							$('#receivedfromuser .message').val('');
+							$('#receivedfromuser .amount').html(wallet.sumCoins(message.coins)/cdd.currency_divisor);
+						});
+					});
+				}
+			}).fail(function(){console.log('Receiving from exchange server failed.')});
+	}
+}, 10000);
+
 
 $(document).bind('pagebeforechange',function(e,data){
     return
