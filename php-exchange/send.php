@@ -2,7 +2,9 @@
 /*
 * Very simple coin exchange server for demo purposes.
 */
- 
+
+header('Access-Control-Allow-Origin: *');
+
 include_once 'database.class.php';
 
 $Database = new Database();
@@ -16,4 +18,7 @@ if (isset($_POST['username']) && isset($_POST['message'])) {
 	else {
 		echo 'ERROR';
 	}
+}
+else {
+	echo 'ERROR';
 }

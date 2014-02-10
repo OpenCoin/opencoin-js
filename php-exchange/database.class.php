@@ -29,8 +29,9 @@ class Database {
 		}
 		
 		// remove delimiters from $key
-		str_replace($this->delimiter, '', $key);
-		str_replace("\n", '', $key);
+		$key = str_replace($this->delimiter, '', $key);
+		// remove linebreaks from value
+		$value = str_replace("\n", '\n', $value);
 		
 		// write line to file
 		$line = $key . $this->delimiter . $value . "\n";
@@ -68,7 +69,7 @@ class Database {
 			$delimiter = strpos($line, $this -> delimiter);
 			$key = substr($line, 0, $delimiter);
 			if ($result === false && $key == $search) {
-				$result = substr($line, ($delimiter + 1));
+				$result = str_replace ('\n', "\n", substr($line, ($delimiter + 1)));
 			}
 			else {
 				$buffer .= $line;
