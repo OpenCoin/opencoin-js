@@ -22,12 +22,12 @@ var server = new oc.layer(api,newStorage());
 console.log('read in data');
 fs.readFile('serverdata.json', 'utf-8',function (err,data) {
     if (err == undefined) {
-        console.log('parsing');
+        console.log('parsing data');
         server.fromJson(data);
         startServer();
         //read in server
     } else {
-        console.log('not found');
+        console.log('data not found');
         setupServer();  
         console.log('write server data');
         fs.writeFile('serverdata.json',server.toJson(),'utf-8',function (err) {
@@ -38,23 +38,27 @@ fs.readFile('serverdata.json', 'utf-8',function (err,data) {
 
 
 function setupServer() {
+    console.log('reading in config.json');
+    config = fs.readFileSync('config.json','utf-8');
+    config = JSON.parse(config);
     console.log('create new server data');
-    issuer_private = suite.makeKey(1024);
+    issuer_private = suite.makeKey(config.keylength);
     issuer_public = issuer_private.getPublicKey();
     server.storage.dsdb = {};
     params = {};
-    params.cdd_location = 'http://localhost:6789/';
-    params.cdd_serial = 1;
-    params.cdd_signing_date = new Date("2014-02-09T13:37:00");
-    params.cdd_expiry_date = new Date("2015-12-31T23:59:59");
-    params.currency_name = 'OpenCoin';
-    params.currency_divisor = 100;
-    params.validation_service = [[10,'http://localhost:6789']];
-    params.info_service =  [[10,'http://localhost:6789']];
-    params.renewal_service =  [[10,'http://localhost:6789']];
-    params.invalidation_service =  [[10,'http://localhost:6789']];
-    params.denominations=[1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000];
-    params.additional_info='';
+    params.cdd_location = config.cdd_location;
+    params.cdd_serial = config.cdd_serial;
+    params.cdd_signing_date = new Date(config.signing_date);
+    params.cdd_expiry_date = new Date(config.expiry_date);
+    params.currency_name = config.currency_name;
+    params.currency_divisor = config.currency_divisor;
+    params.validation_service = config.validation_service;
+    params.info_service =  config.info_service;
+    params.renewal_service =  config.renewal_service;
+    params.invalidation_service =  config.invalidation_service;
+    params.denominations=config.denominations;
+    params.additional_info=config.additional_info;
+    console.log(params);
 
     var cddc = api.makeCDDC(issuer_private,params);
     server.addCDDC(cddc);
@@ -63,9 +67,9 @@ function setupServer() {
         var denomination = cddc.cdd.denominations[i];
         params = {};
         params.denomination = denomination;
-        params.notBefore = new Date("2014-01-01");
-        params.notAfter = new Date("2015-06-30");
-        params.coins_expiry_date = new Date('2015-12-31');
+        params.notBefore = new Date(config.notBefore);
+        params.notAfter = new Date(config.notAfter);
+        params.coins_expiry_date = new Date(config.coins_expiry_date);
         mkout = api.makeMKC(issuer_private,cddc,params);
         mkc = mkout.mkc;
         private_mintkey = mkout.private_mintkey;
@@ -111,6 +115,7 @@ function startServer() {
                         response.write(res.toJson());
                         response.end();
                     } catch (e) {
+                        response.statusCode = 500;
                         response.write('error\n\n' +e);
                         response.end();
         
