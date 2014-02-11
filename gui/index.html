@@ -59,10 +59,12 @@
 	        <div class="ui-block-a"><a href="#send" class="ui-btn ui-icon-mail ui-btn-icon-top ui-btn-b">Send</a></div>
 	        <div class="ui-block-b"><a href="#receive" class="ui-btn ui-icon-shop ui-btn-icon-top ui-btn-b">Receive</a></div>
 	    </div>
-	    <div class="ui-grid-a">
+<!--
+        <div class="ui-grid-a">
 	        <div class="ui-block-a"><a href="#info" class="ui-btn ui-icon-recycle ui-btn-icon-top ui-btn-b" data-rel='dialog' id='getchange'>Get change</a></div>
 	        <div class="ui-block-b"><a href="#processreceipt" class="ui-btn ui-icon-tag ui-btn-icon-top ui-btn-b">Receipt</a></div>
 	    </div>
+--!>        
 		<div class="ui-grid-a">
 	        <div class="ui-block-a"><a href="#withdraw" class="ui-btn ui-icon-arrow-d ui-btn-icon-top ui-btn-b">Withdraw</a></div>
 	        <div class="ui-block-b"><a href="#deposit" class="ui-btn ui-icon-arrow-u ui-btn-icon-top ui-btn-b">Deposit</a></div>
@@ -390,6 +392,8 @@
 
 	<div data-role="content">
         <ul data-role="listview" data-inset="true" data-filter="false">
+	        <li><a href="#info" data-icon='recycle' id='getchange'>Get change</a></li>
+	        <li><a href="#processreceipt" data-icon='tag'>Receipt</a></li>
             <li><a href="#coins" data-icon='info'>Coins</a></li>
             <li><a href="#mkcs" data-icon='info'>Mint key certificates</a></li>
             <li><a href="#cddcs" data-icon='info'>Currency descriptions</a></li>
