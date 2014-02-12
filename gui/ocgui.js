@@ -48,7 +48,36 @@ function quads(text) {
     }
     return out;
 }
+//http://stackoverflow.com/questions/12206631/html5-audio-cant-play-through-javascript-unless-triggered-manually-once
+function playcoinsound(){
 
+    //console.log('about to play');
+    //var coinsound = document.getElementById('coinsound');
+    //console.log(coinsound);
+    //coinsound.volume=1;
+   // coinsound.play();
+    var coinsound = document.createElement('audio');
+    document.body.appendChild(coinsound);
+    coinsound.setAttribute('autoload','autoload');
+    
+    var s1 = document.createElement('source');
+    s1.setAttribute('src','coinsound.mp3');
+    coinsound.appendChild(s1);
+    
+    var s2 = document.createElement('source');
+    s2.setAttribute('src','coinsound.ogg');
+    coinsound.appendChild(s2);
+    
+    var s3 = document.createElement('source');
+    s3.setAttribute('src','coinsound.wav');
+    coinsound.appendChild(s3);
+    
+    coinsound.setAttribute('autoplay','autoplay');
+    //console.log('played');
+    
+    coinsound.parentNode.removeChild(coinsound);
+    
+}
 
 $(function(e,data) {
 
@@ -110,8 +139,11 @@ $(function(e,data) {
         wallet.setActiveStorage({});
     });
     
-    coinsound = document.createElement('audio');
-    coinsound.setAttribute('src', 'coinsound.ogg');
+    //coinsound = document.createElement('audio');
+    //coinsound.setAttribute('type','audio/mpeg');
+    //coinsound.setAttribute('id', 'coinsound');
+    //coinsound.setAttribute('preload', 'auto');
+    //coinsound.setAttribute('src', 'coinsound.wav');
   
     $('#withdraw .confirm').on('click',function(e,data) {
         var amount = parseFloat($('#withdraw input[name="amount"]').val());
@@ -134,7 +166,7 @@ $(function(e,data) {
                 //showInfo('Please wait','refreshing coins...');
                 //interact(renewalurl,wallet.requestRenewal(),function(r) {
                 //    wallet.callHandler(r);
-                    coinsound.play();
+                    playcoinsound();
                     $.mobile.changePage('#currency');  
                 //});
              });
@@ -149,7 +181,7 @@ $(function(e,data) {
         cdd_mk_interaction(function(){
             interact(renewalurl,wallet.requestRenewal(),function(r) {
                 wallet.callHandler(r);
-                coinsound.play();
+                playcoinsound();
                 $.mobile.changePage('#currency');  
             });
         });
@@ -249,7 +281,7 @@ $(function(e,data) {
         cdd_mk_interaction(function(){
             interact(renewalurl,wallet.requestRenewal(message.coins),function(r) {
                 wallet.callHandler(r);
-                coinsound.play();
+                playcoinsound();
                 storeDB();
                 $.mobile.changePage('#receiveresult');
                 response = wallet.responseSendCoins(message);
@@ -453,7 +485,7 @@ setInterval(function() {
 					cdd_mk_interaction(function(){
 						interact(renewalurl,wallet.requestRenewal(message.coins),function(r) {
 							wallet.callHandler(r);
-							coinsound.play();
+							playcoinsound();
 							storeDB();
 							$.mobile.changePage('#receivedfromuser');
 							response = wallet.responseSendCoins(message);
