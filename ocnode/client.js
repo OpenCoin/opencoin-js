@@ -27,7 +27,8 @@ function interact(client,m,print) {
     if (print == undefined) print = true;
     if (print) pcontainer(client.name+': '+m.type,m);
     $.post('http://localhost:6789/',m.toJson(),function(data) {
-        var parsed = JSON.parse(data);
+        if (typeof data == 'string') parsed = JSON.parse(data);
+        else parsed = data;
         var reply = client.parseData(parsed);
         var out = client.callHandler(reply);
         if (print) pcontainer(client.name+': '+reply.type,reply);
